@@ -88,6 +88,11 @@ function App() {
     setGameRunId((prev) => prev + 1)
   }
 
+  const handleSkipGame = () => {
+    // Пропускаем игру с результатом "fail"
+    handleNextStep('fail')
+  }
+
   return (
     <div className="app-root">
       <div className="app-card">
@@ -114,6 +119,7 @@ function App() {
             isFinished={isCurrentGameFinished}
             onMarkGame={handleMarkGame}
             onNextStep={handleNextStep}
+            onSkip={handleSkipGame}
             onRestart={handleRestartCurrentGame}
             gameRunId={gameRunId}
           />
@@ -214,6 +220,7 @@ type GameLayoutProps = {
   result: GameResult
   isFinished: boolean
   onNextStep: (forcedResult?: Exclude<GameResult, null>) => void
+  onSkip: () => void
   isLastGame: boolean
   onRestart: () => void
 }
@@ -225,6 +232,7 @@ function GameLayout({
   result,
   isFinished,
   onNextStep,
+  onSkip,
   isLastGame,
   onRestart,
 }: GameLayoutProps) {
@@ -276,6 +284,16 @@ function GameLayout({
             Заверши мини‑игру, чтобы перейти дальше.
           </p>
         )}
+        <div className="buttons-row" style={{ marginTop: '12px' }}>
+          <button
+            className="btn secondary"
+            type="button"
+            onClick={onSkip}
+            style={{ fontSize: '14px', padding: '8px 16px' }}
+          >
+            Пропустить игру
+          </button>
+        </div>
       </footer>
     </div>
   )
@@ -289,6 +307,7 @@ type GameScreenProps = {
   isFinished: boolean
   onMarkGame: (result: Exclude<GameResult, null>) => void
   onNextStep: (forcedResult?: Exclude<GameResult, null>) => void
+  onSkip: () => void
   onRestart: () => void
   gameRunId: number
 }
@@ -301,6 +320,7 @@ function GameScreen({
   isFinished,
   onMarkGame,
   onNextStep,
+  onSkip,
   onRestart,
   gameRunId,
 }: GameScreenProps) {
@@ -314,6 +334,7 @@ function GameScreen({
         result={result}
         isFinished={isFinished}
         onNextStep={onNextStep}
+        onSkip={onSkip}
         isLastGame={isLastGame}
         onRestart={onRestart}
       >
@@ -334,6 +355,7 @@ function GameScreen({
         result={result}
         isFinished={isFinished}
         onNextStep={onNextStep}
+        onSkip={onSkip}
         isLastGame={isLastGame}
         onRestart={onRestart}
       >
@@ -350,6 +372,7 @@ function GameScreen({
         result={result}
         isFinished={isFinished}
         onNextStep={onNextStep}
+        onSkip={onSkip}
         isLastGame={isLastGame}
         onRestart={onRestart}
       >
@@ -366,6 +389,7 @@ function GameScreen({
         result={result}
         isFinished={isFinished}
         onNextStep={onNextStep}
+        onSkip={onSkip}
         isLastGame={isLastGame}
         onRestart={onRestart}
       >
@@ -382,6 +406,7 @@ function GameScreen({
         result={result}
         isFinished={isFinished}
         onNextStep={onNextStep}
+        onSkip={onSkip}
         isLastGame={isLastGame}
         onRestart={onRestart}
       >
@@ -398,6 +423,7 @@ function GameScreen({
         result={result}
         isFinished={isFinished}
         onNextStep={onNextStep}
+        onSkip={onSkip}
         isLastGame={isLastGame}
         onRestart={onRestart}
       >
@@ -413,6 +439,7 @@ function GameScreen({
       result={result}
       isFinished={isFinished}
       onNextStep={onNextStep}
+      onSkip={onSkip}
       isLastGame={isLastGame}
       onRestart={onRestart}
     >
