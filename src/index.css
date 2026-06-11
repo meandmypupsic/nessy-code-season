@@ -53,3 +53,790 @@ body {
 button {
   font-family: inherit;
 }
+
+/* ============================================
+   DESIGN SYSTEM COMPONENTS
+   ============================================ */
+
+/* 11. Layout - Main Container */
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 128px;
+  position: relative;
+  width: 1190px;
+  height: 3289px;
+  background: #FFFFFF;
+  border-radius: 80px;
+}
+
+/* H1 + P Section */
+.section-h1-p {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 0 32px;
+  width: 934px;
+  height: 88px;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+/* H1 Styles */
+.h1-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: 10px;
+  width: 934px;
+  height: 56px;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.h1 {
+  width: 934px;
+  height: 56px;
+  font-family: 'Tinkoff Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 50px;
+  line-height: 56px;
+  font-feature-settings: 'liga' off;
+  color: #333333;
+  flex: none;
+  order: 0;
+  flex-grow: 1;
+}
+
+/* Badge (hidden by default) */
+.badge {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+  gap: 10px;
+  display: none;
+  width: 110px;
+  height: 56px;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+/* Paragraph Section */
+.paragraph-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 0 16px;
+  isolation: isolate;
+  width: 934px;
+  height: 88px;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+.paragraph {
+  width: 700px;
+  max-width: 700px;
+  height: 72px;
+  font-family: 'Neue Haas Unica W1G';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 24px;
+  color: #333333;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+  z-index: 0;
+}
+
+/* VPN Label (hidden by default) */
+.vpn-label {
+  position: absolute;
+  display: none;
+  height: 24px;
+  left: 0;
+  right: 0;
+  bottom: -24px;
+  font-family: 'Neue Haas Unica W1G';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 24px;
+  color: #9299A2;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  z-index: 1;
+}
+
+/* Note Container */
+.note-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0 0 32px;
+  gap: 16px;
+  width: 934px;
+  height: 105px;
+  flex: none;
+  order: 3;
+  flex-grow: 0;
+}
+
+/* Note Box */
+.note-box {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 24px;
+  gap: 16px;
+  width: 934px;
+  height: 73px;
+  background: rgba(66, 139, 249, 0.16);
+  border-radius: 24px;
+  flex: none;
+  order: 0;
+  flex-grow: 1;
+}
+
+/* Info Icon */
+.info-icon {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 1px 0 0;
+  gap: 10px;
+  width: 24px;
+  height: 25px;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.icon-circle {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.icon-background {
+  position: absolute;
+  left: 4.17%;
+  right: 4.17%;
+  top: 4.17%;
+  bottom: 4.17%;
+  background: linear-gradient(135deg, #428BF9 18.18%, rgba(66, 139, 249, 0.65) 81.82%);
+}
+
+.icon-foreground {
+  position: absolute;
+  left: 37.5%;
+  right: 37.5%;
+  top: 22.41%;
+  bottom: 27.08%;
+  background: #FFFFFF;
+}
+
+/* Note Text */
+.note-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 8px;
+  width: 846px;
+  height: 24px;
+  flex: none;
+  order: 1;
+  flex-grow: 1;
+}
+
+.note-heading {
+  display: none;
+  width: 846px;
+  height: 28px;
+  font-family: 'Tinkoff Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+  font-feature-settings: 'liga' off;
+  color: #333333;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.note-paragraph {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0;
+  gap: 10px;
+  width: 846px;
+  height: 24px;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.note-paragraph p {
+  width: 700px;
+  max-width: 700px;
+  height: 24px;
+  font-family: 'Neue Haas Unica W1G';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 24px;
+  color: #333333;
+  flex: none;
+  order: 0;
+  flex-grow: 1;
+}
+
+/* Image 1x1 Section */
+.image-1x1-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 0 32px;
+  gap: 16px;
+  width: 934px;
+  height: 732px;
+  flex: none;
+  order: 4;
+  flex-grow: 0;
+}
+
+/* Image Placeholder */
+.image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 700px;
+  isolation: isolate;
+  width: 934px;
+  height: 700px;
+  background: #F6F7F8;
+  border-radius: 24px;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.image-start,
+.image-end {
+  width: 934px;
+  height: 0;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.image-end {
+  order: 1;
+  z-index: 1;
+}
+
+.content-appearance {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: #F6F7F8;
+  border-radius: 24px;
+  flex: none;
+  order: 2;
+  flex-grow: 0;
+  z-index: 2;
+}
+
+/* Instance Container */
+.instance-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  gap: 10px;
+  position: absolute;
+  width: 547px;
+  height: 588px;
+  left: calc(50% - 547px / 2);
+  top: calc(50% - 588px / 2);
+  flex: none;
+  order: 3;
+  flex-grow: 0;
+  z-index: 3;
+}
+
+/* Alt Text */
+.alt-text {
+  position: absolute;
+  height: 17px;
+  left: 0;
+  right: 0;
+  bottom: -27px;
+  font-family: 'SF Pro Text';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  color: #000000;
+  flex: none;
+  order: 4;
+  flex-grow: 0;
+  z-index: 4;
+}
+
+/* Annotation (hidden by default) */
+.annotation {
+  display: none;
+  width: 934px;
+  height: 24px;
+  font-family: 'Neue Haas Unica W1G';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 24px;
+  color: #9299A2;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+/* H2 + P Section */
+.section-h2-p {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 0 32px;
+  width: 934px;
+  height: 88px;
+  flex: none;
+  order: 5;
+  flex-grow: 0;
+}
+
+.h2-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0;
+  gap: 10px;
+  width: 934px;
+  height: 40px;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.h2 {
+  width: 934px;
+  height: 40px;
+  font-family: 'Tinkoff Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 36px;
+  line-height: 40px;
+  font-feature-settings: 'liga' off;
+  color: #333333;
+  flex: none;
+  order: 0;
+  flex-grow: 1;
+}
+
+/* Image 2x1 Section */
+.image-2x1-section {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0 0 32px;
+  gap: 32px;
+  width: 934px;
+  height: 392px;
+  flex: none;
+  order: 8;
+  flex-grow: 0;
+}
+
+.image-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 16px;
+  width: 451px;
+  height: 360px;
+  flex: none;
+  order: 0;
+  flex-grow: 1;
+}
+
+.image-item .image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 320px;
+  isolation: isolate;
+  width: 451px;
+  height: 320px;
+  border-radius: 24px;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.image-item .instance-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  gap: 10px;
+  position: absolute;
+  width: 451px;
+  height: 320px;
+  left: calc(50% - 451px / 2 + 0.5px);
+  top: calc(50% - 320px / 2);
+  flex: none;
+  order: 3;
+  flex-grow: 0;
+  z-index: 3;
+}
+
+/* Card 2x1 Section */
+.card-2x1-section {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0 0 32px;
+  gap: 32px;
+  isolation: isolate;
+  width: 934px;
+  height: 347px;
+  border-radius: 24px;
+  flex: none;
+  order: 12;
+  flex-grow: 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  width: 451px;
+  height: 315px;
+  flex: none;
+  order: 0;
+  flex-grow: 1;
+}
+
+.card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 32px;
+  width: 451px;
+  height: 168px;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 32px 32px 0;
+  width: 451px;
+  height: 168px;
+  background: #F6F7F8;
+  border-radius: 24px 24px 0 0;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.guide-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 0 24px;
+  gap: 8px;
+  width: 387px;
+  height: 136px;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.card-title {
+  width: 387px;
+  height: 32px;
+  font-family: 'Tinkoff Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 32px;
+  font-feature-settings: 'liga' off;
+  color: #333333;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 32px;
+  gap: 10px;
+  width: 451px;
+  height: 115px;
+  background: #F6F7F8;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.card-image {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 10px;
+  width: 387px;
+  height: 115px;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.card-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  isolation: isolate;
+  width: 387px;
+  height: 115px;
+  border-radius: 24px;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.card-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 32px;
+  width: 451px;
+  height: 32px;
+  flex: none;
+  order: 2;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.footer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 32px;
+  width: 451px;
+  height: 32px;
+  background: #F6F7F8;
+  border-radius: 0 0 24px 24px;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+/* Typography Utilities */
+.body-m {
+  font-family: 'Neue Haas Unica W1G';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 24px;
+  color: #333333;
+}
+
+.body-m-annotation {
+  font-family: 'Neue Haas Unica W1G';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 24px;
+  color: #9299A2;
+}
+
+/* Toggle Component */
+.toggle {
+  position: absolute;
+  width: 161.63px;
+  height: 85.27px;
+  left: 144.59px;
+  top: 117.57px;
+}
+
+.toggle-rectangle {
+  position: absolute;
+  left: 32.06%;
+  right: 32.1%;
+  top: 36.74%;
+  bottom: 36.61%;
+  background: url(.png), linear-gradient(269.97deg, #FF8000 0.13%, #FFDD2D 96.69%);
+  background-blend-mode: soft-light, normal;
+  border-radius: 73.505px;
+}
+
+.toggle-ellipse {
+  position: absolute;
+  width: 67.84px;
+  height: 67.84px;
+  left: 228.7px;
+  top: 125.72px;
+  background: #FFFFFF;
+  box-shadow: 2.20515px 0 5.14535px rgba(255, 128, 0, 0.25);
+  border-radius: 166.886px;
+}
+
+/* Age Rating Badge */
+.age-badge {
+  position: absolute;
+  width: 59px;
+  left: calc(50% - 59px / 2 - 118px);
+  top: 28.7%;
+  bottom: 28.6%;
+}
+
+.age-rectangle {
+  position: absolute;
+  left: 0%;
+  right: 0%;
+  top: -0.11%;
+  bottom: 0.11%;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.age-text {
+  position: absolute;
+  visibility: hidden;
+  left: 18.18%;
+  right: 17.77%;
+  top: 30.91%;
+  bottom: 34.09%;
+  background: #FFFFFF;
+}
+
+.age-zero {
+  position: absolute;
+  width: 26.42px;
+  height: 17.06px;
+  left: calc(50% - 26.42px / 2 + 0.08px);
+  top: 15.24px;
+  background: #333333;
+}
+
+/* Dark Theme Card Styles */
+.card-dark {
+  background: linear-gradient(360deg, #2C2733 0%, #17121E 100%);
+  border: 1px solid #000000;
+}
+
+.card-dark .card-title {
+  color: #FFFFFF;
+}
+
+.card-dark .card-paragraph {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Glassmorphism Frame */
+.glass-frame {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 26.6187px 38.7529px;
+  gap: 9.88px;
+  position: absolute;
+  width: 161.44px;
+  height: 97.24px;
+  left: calc(50% - 161.44px / 2);
+  top: calc(50% - 97.24px / 2);
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2.00403px 8.01612px rgba(167, 167, 167, 0.3);
+  backdrop-filter: blur(48.4028px);
+  border-radius: 26.5951px;
+}
+
+.glass-text {
+  width: 83.93px;
+  height: 44px;
+  font-family: 'Neue Haas Unica W1G';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 29.0417px;
+  line-height: 44px;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+/* Online Status Text */
+.online-text {
+  width: 83.4px;
+  height: 44px;
+  font-family: 'Neue Haas Unica W1G';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 29.0767px;
+  line-height: 44px;
+  color: rgba(255, 255, 255, 0.7);
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
