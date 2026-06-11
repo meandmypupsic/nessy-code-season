@@ -3,12 +3,24 @@
     -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #f9fafb;
-  background-color: #020617;
+  color: #333333;
+  background-color: #FFFFFF;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Nestor Color Palette - Light Theme */
+  --color-white: #FFFFFF;
+  --color-gray-light: #E5E7E8;
+  --color-dark: #333333;
+  --color-accent: #FDB124;
+  --color-annotation: #9299A2;
+  --border-color: rgba(51, 51, 51, 0.3);
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F5F5F7;
+  --color-text-primary: #333333;
+  --color-text-secondary: #6B7280;
 }
 
 a {
