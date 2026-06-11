@@ -5,6 +5,7 @@ import ReactionGame from './games/ReactionGame'
 import MatchPairsGame from './games/MatchPairsGame'
 import TapGame from './games/TapGame'
 import CraftingGame from './games/CraftingGame'
+import PrTinderGame from './games/PrTinderGame'
 import { POSTCARDS, renderPostcard } from './postcards'
 import nessyNewYearImage from './assets/nessy-new-year.png'
 
@@ -12,7 +13,7 @@ type Screen = 'start' | 'enterName' | 'game' | 'summary'
 type GameResult = 'success' | 'fail' | null
 
 const MAX_NAME_LENGTH = 127
-const TOTAL_GAMES = 5
+const TOTAL_GAMES = 6
 
 function App() {
   const [screen, setScreen] = useState<Screen>('start')
@@ -389,6 +390,22 @@ function GameScreen({
     )
   }
 
+  if (gameIndex === 5) {
+    return (
+      <GameLayout
+        title="Игра 6. PR Tinder"
+        description="Оценивай diff-карточки с кодом за 60 секунд. Выбери: Approve, Request Changes, Security Risk, Need Tests или Unclear. Нужно успеть оценить 12+ карточек."
+        result={result}
+        isFinished={isFinished}
+        onNextStep={onNextStep}
+        isLastGame={isLastGame}
+        onRestart={onRestart}
+      >
+        <PrTinderGame key={gameRunId} onFinish={onMarkGame} />
+      </GameLayout>
+    )
+  }
+
   return (
     <GameLayout
       title={`Игра ${gameIndex + 1} из ${totalGames}`}
@@ -450,6 +467,8 @@ function SummaryScreen({ playerName, results, onRestart }: SummaryScreenProps) {
         return 'Ты в теме, но не до конца. Скорее, как разработчик, который слышал про Nestor на митапе, но забыл, зачем он. Бывает.'
       case 4:
         return 'Ого! Ты явно не просто так тут. Скажи честно — ты в команде? Или, может, просто слишком много кофе перед этим тестом? ☕'
+      case 5:
+        return 'Почти идеально! Ты прошёл 5 из 6 игр. Остался последний рывок — и ты легенда Nestor! 🚀'
       default:
         return 'Если это не чит, то ты явно в команде Nestor. Или у тебя слишком хорошая память. Или слишком много свободного времени 😏'
     }
