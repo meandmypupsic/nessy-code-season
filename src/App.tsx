@@ -6,6 +6,7 @@ import MatchPairsGame from './games/MatchPairsGame'
 import TapGame from './games/TapGame'
 import CraftingGame from './games/CraftingGame'
 import PrTinderGame from './games/PrTinderGame'
+import BlastRadiusGame from './games/BlastRadiusGame'
 import { POSTCARDS, renderPostcard } from './postcards'
 import nessyNewYearImage from './assets/nessy-new-year.png'
 
@@ -13,12 +14,92 @@ type Screen = 'start' | 'enterName' | 'game' | 'summary'
 type GameResult = 'success' | 'fail' | null
 
 const MAX_NAME_LENGTH = 127
-const TOTAL_GAMES = 6
+const GAMES_PER_RUN = 5
+
+type GameDefinition = {
+  id: string
+  title: string
+  description: string
+  render: (onFinish: (result: Exclude<GameResult, null>) => void) => React.ReactNode
+}
+
+const AVAILABLE_GAMES: GameDefinition[] = [
+  {
+    id: 'puzzle',
+    title: 'Узнай тайну Nestor Agent',
+    description:
+      'Перед тобой картинка, разделенная на 9 частей. Нажимай по очереди на два блока — они поменяются местами. У тебя есть 30 секунд, чтобы собрать изображение целиком.',
+    render: (onFinish) => (
+      <PuzzleGame durationSeconds={30} onFinish={onFinish} />
+    ),
+  },
+  {
+    id: 'reaction',
+    title: 'Реакция на пост',
+    description:
+      'Перед тобой пост в канале ~nestor-announcement. Поставь реакцию: только одна из них — «правильная», остальные приведут к провалу.',
+    render: (onFinish) => <ReactionGame onFinish={onFinish} />,
+  },
+  {
+    id: 'crafting',
+    title: 'Крафтинг конфигурации Nestor',
+    description:
+      'У тебя есть набор кубиков — фичи Nestor. Собери такую конфигурацию, которая подойдёт для решения задачи: Создание алгоритма банковского скоринга.',
+    render: (onFinish) => <CraftingGame onFinish={onFinish} />,
+  },
+  {
+    id: 'match-pairs',
+    title: 'Что такое Nestor?',
+    description:
+      'С одной стороны — продукты вселенной Nestor, с другой — твои повседневные инструменты. Выбери слева название сервиса Nestor, а потом кликни справа по связанному продукту, чтобы собрать все пары.',
+    render: (onFinish) => <MatchPairsGame onFinish={onFinish} />,
+  },
+  {
+    id: 'tap',
+    title: 'Тапалка: процент кода',
+    description:
+      'У тебя появилась возможность натапать свой процент сгенерированного кода.',
+    render: (onFinish) => (
+      <TapGame durationSeconds={8} onFinish={onFinish} />
+    ),
+  },
+  {
+    id: 'pr-tinder',
+    title: 'PR Tinder',
+    description:
+      'Оценивай diff-карточки с кодом за 60 секунд. Выбери: Approve, Request Changes, Security Risk, Need Tests или Unclear. Нужно успеть оценить 12+ карточек.',
+    render: (onFinish) => <PrTinderGame onFinish={onFinish} />,
+  },
+  {
+    id: 'blast-radius',
+    title: 'Blast Radius',
+    description:
+      'Управляй feature flags как в Flipt. Останови ущерб от бага в проде за 90 секунд: настрой флаги для каждого сегмента пользователей.',
+    render: (onFinish) => <BlastRadiusGame onFinish={onFinish} />,
+  },
+]
+
+function getRandomGamesForRun() {
+  const shuffledGames = [...AVAILABLE_GAMES]
+
+  for (let i = shuffledGames.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffledGames[i], shuffledGames[j]] = [
+      shuffledGames[j],
+      shuffledGames[i],
+    ]
+  }
+
+  return shuffledGames.slice(0, Math.min(GAMES_PER_RUN, AVAILABLE_GAMES.length))
+}
 
 function App() {
   const [screen, setScreen] = useState<Screen>('start')
   const [playerName, setPlayerName] = useState('')
   const [nameError, setNameError] = useState<string | null>(null)
+  const [gamesForRun, setGamesForRun] = useState<GameDefinition[]>(() =>
+    getRandomGamesForRun(),
+  )
 
   const [currentGameIndex, setCurrentGameIndex] = useState(0)
   const [currentGameResult, setCurrentGameResult] = useState<GameResult>(null)
@@ -46,6 +127,12 @@ function App() {
       setNameError('Имя не может быть пустым')
       return
     }
+    setGamesForRun(getRandomGamesForRun())
+    setCurrentGameIndex(0)
+    setCurrentGameResult(null)
+    setIsCurrentGameFinished(false)
+    setResults([])
+    setGameRunId(0)
     setScreen('game')
   }
 
@@ -61,7 +148,7 @@ function App() {
     updatedResults[currentGameIndex] = resultToStore
     setResults(updatedResults)
 
-    if (currentGameIndex + 1 >= TOTAL_GAMES) {
+    if (currentGameIndex + 1 >= gamesForRun.length) {
       setScreen('summary')
       return
     }
@@ -80,6 +167,7 @@ function App() {
     setIsCurrentGameFinished(false)
     setResults([])
     setGameRunId(0)
+    setGamesForRun(getRandomGamesForRun())
   }
 
   const handleRestartCurrentGame = () => {
@@ -113,8 +201,8 @@ function App() {
         {screen === 'game' && (
           <GameScreen
             playerName={playerName}
-            gameIndex={currentGameIndex}
-            totalGames={TOTAL_GAMES}
+            game={gamesForRun[currentGameIndex]}
+            isLastGame={currentGameIndex + 1 === gamesForRun.length}
             result={currentGameResult}
             isFinished={isCurrentGameFinished}
             onMarkGame={handleMarkGame}
@@ -301,8 +389,8 @@ function GameLayout({
 
 type GameScreenProps = {
   playerName: string
-  gameIndex: number
-  totalGames: number
+  game: GameDefinition | undefined
+  isLastGame: boolean
   result: GameResult
   isFinished: boolean
   onMarkGame: (result: Exclude<GameResult, null>) => void
@@ -314,8 +402,8 @@ type GameScreenProps = {
 
 function GameScreen({
   playerName,
-  gameIndex,
-  totalGames,
+  game,
+  isLastGame,
   result,
   isFinished,
   onMarkGame,
@@ -324,13 +412,11 @@ function GameScreen({
   onRestart,
   gameRunId,
 }: GameScreenProps) {
-  const isLastGame = gameIndex + 1 === totalGames
-
-  if (gameIndex === 0) {
+  if (game) {
     return (
       <GameLayout
-        title="Игра 1. Узнай тайну Nestor Agent"
-        description="Перед тобой картинка, разделенная на 9 частей. Нажимай по очереди на два блока — они поменяются местами. У тебя есть 30 секунд, чтобы собрать изображение целиком."
+        title={game.title}
+        description={game.description}
         result={result}
         isFinished={isFinished}
         onNextStep={onNextStep}
@@ -338,103 +424,16 @@ function GameScreen({
         isLastGame={isLastGame}
         onRestart={onRestart}
       >
-        <PuzzleGame
-          key={gameRunId}
-          durationSeconds={30}
-          onFinish={onMarkGame}
-        />
-      </GameLayout>
-    )
-  }
-
-  if (gameIndex === 1) {
-    return (
-      <GameLayout
-        title="Игра 2. Реакция на пост"
-        description="Перед тобой пост в канале ~nestor-announcement. Поставь реакцию: только одна из них — «правильная», остальные приведут к провалу."
-        result={result}
-        isFinished={isFinished}
-        onNextStep={onNextStep}
-        onSkip={onSkip}
-        isLastGame={isLastGame}
-        onRestart={onRestart}
-      >
-        <ReactionGame key={gameRunId} onFinish={onMarkGame} />
-      </GameLayout>
-    )
-  }
-
-  if (gameIndex === 2) {
-    return (
-      <GameLayout
-        title="Игра 3. Крафтинг конфигурации Nestor"
-        description="У тебя есть набор кубиков — фичи Nestor. Собери такую конфигурацию, которая подойдёт для решения задачи: Создание алгоритма банковского скоринга."
-        result={result}
-        isFinished={isFinished}
-        onNextStep={onNextStep}
-        onSkip={onSkip}
-        isLastGame={isLastGame}
-        onRestart={onRestart}
-      >
-        <CraftingGame key={gameRunId} onFinish={onMarkGame} />
-      </GameLayout>
-    )
-  }
-
-  if (gameIndex === 3) {
-    return (
-      <GameLayout
-        title="Игра 4. Что такое Nestor?"
-        description="С одной стороны — продукты вселенной Nestor, с другой — твои повседневные инструменты. Выбери слева название сервиса Nestor, а потом кликни справа по связанному продукту, чтобы собрать все пары."
-        result={result}
-        isFinished={isFinished}
-        onNextStep={onNextStep}
-        onSkip={onSkip}
-        isLastGame={isLastGame}
-        onRestart={onRestart}
-      >
-        <MatchPairsGame key={gameRunId} onFinish={onMarkGame} />
-      </GameLayout>
-    )
-  }
-
-  if (gameIndex === 4) {
-    return (
-      <GameLayout
-        title="Игра 5. Тапалка: процент кода"
-        description="У тебя появилась возможность натапать свой процент сгенерированного кода."
-        result={result}
-        isFinished={isFinished}
-        onNextStep={onNextStep}
-        onSkip={onSkip}
-        isLastGame={isLastGame}
-        onRestart={onRestart}
-      >
-        <TapGame key={gameRunId} durationSeconds={8} onFinish={onMarkGame} />
-      </GameLayout>
-    )
-  }
-
-  if (gameIndex === 5) {
-    return (
-      <GameLayout
-        title="Игра 6. PR Tinder"
-        description="Оценивай diff-карточки с кодом за 60 секунд. Выбери: Approve, Request Changes, Security Risk, Need Tests или Unclear. Нужно успеть оценить 12+ карточек."
-        result={result}
-        isFinished={isFinished}
-        onNextStep={onNextStep}
-        onSkip={onSkip}
-        isLastGame={isLastGame}
-        onRestart={onRestart}
-      >
-        <PrTinderGame key={gameRunId} onFinish={onMarkGame} />
+        <div key={`${game.id}-${gameRunId}`}>
+          {game.render(onMarkGame)}
+        </div>
       </GameLayout>
     )
   }
 
   return (
     <GameLayout
-      title={`Игра ${gameIndex + 1} из ${totalGames}`}
+      title="Мини‑игра"
       description={`Шаблон новогодней мини‑игры про Nestor для игрока ${playerName}. Здесь потом появится реальный геймплей.`}
       result={result}
       isFinished={isFinished}
@@ -495,9 +494,9 @@ function SummaryScreen({ playerName, results, onRestart }: SummaryScreenProps) {
       case 4:
         return 'Ого! Ты явно не просто так тут. Скажи честно — ты в команде? Или, может, просто слишком много кофе перед этим тестом? ☕'
       case 5:
-        return 'Почти идеально! Ты прошёл 5 из 6 игр. Остался последний рывок — и ты легенда Nestor! 🚀'
-      default:
         return 'Если это не чит, то ты явно в команде Nestor. Или у тебя слишком хорошая память. Или слишком много свободного времени 😏'
+      default:
+        return 'Отличный результат! Ты явно хорошо ориентируешься во вселенной Nestor.'
     }
   }
 
