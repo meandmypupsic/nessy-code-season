@@ -240,9 +240,9 @@ function StartScreen({ onStart }: StartScreenProps) {
         <div className="city-sign">Санкт-Петербург</div>
         <div className="hero-copy">
           <p className="eyebrow">Сезон кода</p>
-          <h1 className="title hero-title">Забег AI для SDLC</h1>
+          <h1 className="title hero-title">Прод, жара и агенты</h1>
           <p className="subtitle hero-subtitle">
-            Введи своё имя, пройди мини-игры от Nessy и узнай, насколько хорошо ты знаком с лором Nestor 2025 года.
+            Жми "НАЧАТЬ ИГРУ", пройди мини-задания от Nessy и узнай, насколько хорошо ты знаком с AI для SDLC.
           </p>
           <div className="buttons-row">
             <button className="btn primary" onClick={onStart}>
