@@ -236,7 +236,7 @@ type StartScreenProps = {
 function StartScreen({ onStart }: StartScreenProps) {
   return (
     <div className="screen">
-      <h1 className="title">Новогодняя игра «Вселенная Nestor 2025»</h1>
+      <h1 className="title">Забег AI для SDLC</h1>
       <p className="subtitle">
         Введи своё имя, пройди мини‑игры от Nessy и узнай, насколько хорошо ты знаком с лором Nestor 2025 года.
       </p>

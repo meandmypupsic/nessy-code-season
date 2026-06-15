@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px 16px;
+  padding: 28px 32px;
   background: linear-gradient(135deg, var(--color-white) 0%, var(--color-gray-light) 100%);
   color: var(--color-text-primary);
   box-sizing: border-box;
@@ -11,7 +11,8 @@
 
 .app-card {
   width: 100%;
-  max-width: 960px;
+  max-width: 1280px;
+  min-height: min(820px, calc(100vh - 56px));
   background: var(--color-white);
   border-radius: 24px;
   box-shadow:
@@ -19,11 +20,13 @@
     0 0 0 1px var(--border-color);
   padding: 32px 28px 28px;
   backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
 }
 
 @media (min-width: 768px) {
   .app-card {
-    padding: 40px 40px 32px;
+    padding: 48px 56px 40px;
   }
 }
 
@@ -31,6 +34,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  flex: 1;
 }
 
 .title {
@@ -199,10 +203,14 @@
 
 .game-content {
   margin-top: 8px;
-  padding: 16px 18px;
+  padding: 24px 28px;
   border-radius: 20px;
   background: radial-gradient(circle at top left, rgba(253, 177, 36, 0.1), var(--color-bg-secondary));
   border: 1px solid var(--border-color);
+  min-height: min(560px, 52vh);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .dummy-game {
@@ -318,7 +326,7 @@
 }
 
 .app-footer {
-  margin-top: 28px;
+  margin-top: auto;
   padding-top: 12px;
   border-top: 1px dashed var(--border-color);
   display: flex;
@@ -359,7 +367,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 4px;
-  width: min(420px, 100%);
+  width: min(720px, 100%);
   aspect-ratio: 634 / 442;
 }
 
@@ -488,7 +496,7 @@
 
 .missing-piece-image-wrapper {
   width: 100%;
-  max-width: 420px;
+  max-width: 720px;
   aspect-ratio: 634 / 442;
   border-radius: 18px;
   overflow: hidden;
