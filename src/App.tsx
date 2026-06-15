@@ -15,6 +15,48 @@ type GameResult = 'success' | 'fail' | null
 
 const MAX_NAME_LENGTH = 127
 const GAMES_PER_RUN = 5
+const NAME_PLACEHOLDERS = [
+  "Например, Жаркий вайбкодер",
+  "Например, Летний деплойщик",
+  "Например, Главный по продакшену",
+  "Например, Багоборец",
+  "Например, Агент 404",
+  "Например, Продовый маг",
+  "Например, Сеньор по лету",
+  "Например, CI/CD-чемпион",
+  "Например, Повелитель фичефлагов",
+  "Например, Merge-мастер",
+  "Например, Hotfix-герой",
+  "Например, Тот самый из прода",
+  "Например, Властелин контекста",
+  "Например, QA-ниндзя",
+  "Например, Prompt-пилот",
+  "Например, Контекстный маг",
+  "Например, Релизный шаман",
+  "Например, Капитан Rollback",
+  "Например, Main Character",
+  "Например, Summer Engineer",
+  "Например, Кодовый спасатель",
+  "Например, Агент на минималках",
+  "Например, Человек-пайплайн",
+  "Например, Лорд Staging",
+  "Например, Фича в шлёпках",
+  "Например, Тёплый коммит",
+  "Например, Солнечный ревьюер",
+  "Например, Деплойный вайб",
+  "Например, Летний мерж",
+  "Например, Прод без паники",
+  "Например, Тесты зелёные",
+  "Например, Шорткат до прода",
+  "Например, Хранитель main",
+  "Например, Спринтующий агент",
+  "Например, Билд прошёл",
+  "Например, Код под SPF 50",
+  "Например, Архитектор вайба",
+  "Например, Инженер хорошего настроения",
+  "Например, Просто Денис",
+  "Например, Не баг, а фича"
+]
 
 type GameDefinition = {
   id: string
@@ -93,10 +135,17 @@ function getRandomGamesForRun() {
   return shuffledGames.slice(0, Math.min(GAMES_PER_RUN, AVAILABLE_GAMES.length))
 }
 
+function getRandomNamePlaceholder() {
+  return NAME_PLACEHOLDERS[
+    Math.floor(Math.random() * NAME_PLACEHOLDERS.length)
+  ]
+}
+
 function App() {
   const [screen, setScreen] = useState<Screen>('start')
   const [playerName, setPlayerName] = useState('')
   const [nameError, setNameError] = useState<string | null>(null)
+  const [namePlaceholder, setNamePlaceholder] = useState(NAME_PLACEHOLDERS[0])
   const [gamesForRun, setGamesForRun] = useState<GameDefinition[]>(() =>
     getRandomGamesForRun(),
   )
@@ -109,6 +158,7 @@ function App() {
   const [gameRunId, setGameRunId] = useState(0)
 
   const handleStartClick = () => {
+    setNamePlaceholder(getRandomNamePlaceholder())
     setScreen('enterName')
   }
 
@@ -192,6 +242,7 @@ function App() {
           <EnterNameScreen
             name={playerName}
             error={nameError}
+            placeholder={namePlaceholder}
             onChangeName={handleNameChange}
             onStartGame={handleStartGame}
             onBack={() => setScreen('start')}
@@ -269,6 +320,7 @@ function StartScreen({ onStart }: StartScreenProps) {
 type EnterNameScreenProps = {
   name: string
   error: string | null
+  placeholder: string
   onChangeName: (value: string) => void
   onStartGame: () => void
   onBack: () => void
@@ -277,6 +329,7 @@ type EnterNameScreenProps = {
 function EnterNameScreen({
   name,
   error,
+  placeholder,
   onChangeName,
   onStartGame,
   onBack,
@@ -293,7 +346,7 @@ function EnterNameScreen({
           className={`input ${error ? 'input-error' : ''}`}
           value={name}
           onChange={(e) => onChangeName(e.target.value)}
-          placeholder="Например, :nestor_help:"
+          placeholder={placeholder}
         />
         <div className="input-footer">
           <span className="input-counter">
