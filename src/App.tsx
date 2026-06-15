@@ -12,6 +12,8 @@ import nessyNewYearImage from './assets/nessy-new-year.png'
 
 type Screen = 'start' | 'enterName' | 'game' | 'summary'
 type GameResult = 'success' | 'fail' | null
+type StoredGameResultSource = 'played' | 'skipped' | null
+type GameSessionStatus = 'started' | 'in_progress' | 'finished'
 
 const MAX_NAME_LENGTH = 127
 const GAMES_PER_RUN = 5
@@ -63,6 +65,30 @@ type GameDefinition = {
   title: string
   description: string
   render: (onFinish: (result: Exclude<GameResult, null>) => void) => React.ReactNode
+}
+
+type GameSessionPayload = {
+  sessionId: string
+  playerLogin: string
+  status: GameSessionStatus
+  startedAt: string
+  updatedAt: string
+  finishedAt: string | null
+  games: Array<{
+    index: number
+    id: string
+    title: string
+    description: string
+    result: GameResult
+    resultSource: StoredGameResultSource
+    completedAt: string | null
+  }>
+  summary: {
+    totalGames: number
+    completedGames: number
+    successCount: number
+    failCount: number
+  }
 }
 
 const AVAILABLE_GAMES: GameDefinition[] = [
@@ -141,6 +167,63 @@ function getRandomNamePlaceholder() {
   ]
 }
 
+function createGameSessionId() {
+  const randomPart = Math.random().toString(36).slice(2, 10)
+  return `game-${Date.now()}-${randomPart}`
+}
+
+function buildGameSessionPayload(params: {
+  sessionId: string
+  playerLogin: string
+  status: GameSessionStatus
+  startedAt: string
+  updatedAt: string
+  finishedAt: string | null
+  games: GameDefinition[]
+  results: GameResult[]
+  resultSources: StoredGameResultSource[]
+  completedAt: Array<string | null>
+}): GameSessionPayload {
+  const successCount = params.results.filter((result) => result === 'success').length
+  const failCount = params.results.filter((result) => result === 'fail').length
+
+  return {
+    sessionId: params.sessionId,
+    playerLogin: params.playerLogin,
+    status: params.status,
+    startedAt: params.startedAt,
+    updatedAt: params.updatedAt,
+    finishedAt: params.finishedAt,
+    games: params.games.map((game, index) => ({
+      index,
+      id: game.id,
+      title: game.title,
+      description: game.description,
+      result: params.results[index] ?? null,
+      resultSource: params.resultSources[index] ?? null,
+      completedAt: params.completedAt[index] ?? null,
+    })),
+    summary: {
+      totalGames: params.games.length,
+      completedGames: params.results.filter((result) => result !== null).length,
+      successCount,
+      failCount,
+    },
+  }
+}
+
+function saveGameSession(payload: GameSessionPayload) {
+  void fetch('/api/game-session', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  }).catch((error) => {
+    console.warn('Не удалось сохранить игровую сессию', error)
+  })
+}
+
 function App() {
   const [screen, setScreen] = useState<Screen>('start')
   const [playerName, setPlayerName] = useState('')
@@ -155,6 +238,10 @@ function App() {
   const [isCurrentGameFinished, setIsCurrentGameFinished] = useState(false)
 
   const [results, setResults] = useState<GameResult[]>([])
+  const [resultSources, setResultSources] = useState<StoredGameResultSource[]>([])
+  const [resultCompletedAt, setResultCompletedAt] = useState<Array<string | null>>([])
+  const [gameSessionId, setGameSessionId] = useState<string | null>(null)
+  const [sessionStartedAt, setSessionStartedAt] = useState<string | null>(null)
   const [gameRunId, setGameRunId] = useState(0)
 
   const handleStartClick = () => {
@@ -177,12 +264,36 @@ function App() {
       setNameError('Имя не может быть пустым')
       return
     }
-    setGamesForRun(getRandomGamesForRun())
+    const runGames = getRandomGamesForRun()
+    const startedAt = new Date().toISOString()
+    const sessionId = createGameSessionId()
+    const normalizedPlayerName = playerName.trim()
+
+    setPlayerName(normalizedPlayerName)
+    setGamesForRun(runGames)
     setCurrentGameIndex(0)
     setCurrentGameResult(null)
     setIsCurrentGameFinished(false)
     setResults([])
+    setResultSources([])
+    setResultCompletedAt([])
+    setGameSessionId(sessionId)
+    setSessionStartedAt(startedAt)
     setGameRunId(0)
+    saveGameSession(
+      buildGameSessionPayload({
+        sessionId,
+        playerLogin: normalizedPlayerName,
+        status: 'started',
+        startedAt,
+        updatedAt: startedAt,
+        finishedAt: null,
+        games: runGames,
+        results: [],
+        resultSources: [],
+        completedAt: [],
+      }),
+    )
     setScreen('game')
   }
 
@@ -193,14 +304,54 @@ function App() {
 
   const handleNextStep = (forcedResult?: Exclude<GameResult, null>) => {
     const updatedResults = [...results]
+    const updatedResultSources = [...resultSources]
+    const updatedCompletedAt = [...resultCompletedAt]
     const resultToStore: Exclude<GameResult, null> =
       forcedResult ?? currentGameResult ?? 'fail'
+    const completedAt = new Date().toISOString()
     updatedResults[currentGameIndex] = resultToStore
+    updatedResultSources[currentGameIndex] = forcedResult ? 'skipped' : 'played'
+    updatedCompletedAt[currentGameIndex] = completedAt
     setResults(updatedResults)
+    setResultSources(updatedResultSources)
+    setResultCompletedAt(updatedCompletedAt)
 
     if (currentGameIndex + 1 >= gamesForRun.length) {
+      if (gameSessionId && sessionStartedAt) {
+        saveGameSession(
+          buildGameSessionPayload({
+            sessionId: gameSessionId,
+            playerLogin: playerName,
+            status: 'finished',
+            startedAt: sessionStartedAt,
+            updatedAt: completedAt,
+            finishedAt: completedAt,
+            games: gamesForRun,
+            results: updatedResults,
+            resultSources: updatedResultSources,
+            completedAt: updatedCompletedAt,
+          }),
+        )
+      }
       setScreen('summary')
       return
+    }
+
+    if (gameSessionId && sessionStartedAt) {
+      saveGameSession(
+        buildGameSessionPayload({
+          sessionId: gameSessionId,
+          playerLogin: playerName,
+          status: 'in_progress',
+          startedAt: sessionStartedAt,
+          updatedAt: completedAt,
+          finishedAt: null,
+          games: gamesForRun,
+          results: updatedResults,
+          resultSources: updatedResultSources,
+          completedAt: updatedCompletedAt,
+        }),
+      )
     }
 
     setCurrentGameIndex((prev) => prev + 1)
@@ -216,6 +367,10 @@ function App() {
     setCurrentGameResult(null)
     setIsCurrentGameFinished(false)
     setResults([])
+    setResultSources([])
+    setResultCompletedAt([])
+    setGameSessionId(null)
+    setSessionStartedAt(null)
     setGameRunId(0)
     setGamesForRun(getRandomGamesForRun())
   }
