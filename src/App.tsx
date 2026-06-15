@@ -262,23 +262,6 @@ function StartScreen({ onStart }: StartScreenProps) {
           <div className="grass-bed" />
         </div>
       </section>
-      <div className="intro-grid">
-        <article className="intro-card">
-          <span className="intro-icon">01</span>
-          <h2>Мини-игры</h2>
-          <p>Пять коротких заданий про продукты, процессы и лор Nestor.</p>
-        </article>
-        <article className="intro-card">
-          <span className="intro-icon">02</span>
-          <h2>Фестиваль</h2>
-          <p>Светлая летняя стилистика с дорожными плашками и акцентами сезона.</p>
-        </article>
-        <article className="intro-card">
-          <span className="intro-icon">03</span>
-          <h2>Открытка</h2>
-          <p>В финале получишь персональный текст от Nessy.</p>
-        </article>
-      </div>
     </div>
   )
 }

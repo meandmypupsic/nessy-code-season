@@ -287,11 +287,11 @@
 .start-screen {
   width: 100%;
   max-width: none;
-  gap: 46px;
+  gap: 0;
 }
 
 .start-hero {
-  min-height: clamp(580px, 74vh, 820px);
+  min-height: clamp(720px, 88vh, 920px);
   display: grid;
   grid-template-rows: auto 1fr;
   align-items: start;
@@ -304,7 +304,7 @@
   margin: 0 auto;
   text-align: center;
   position: relative;
-  z-index: 3;
+  z-index: 6;
 }
 
 .hero-title {
@@ -313,15 +313,25 @@
 
 .hero-subtitle {
   margin: 12px auto 0;
+  max-width: 660px;
+  color: var(--color-dark);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.hero-copy .buttons-row {
+  justify-content: center;
+  margin-top: 22px;
 }
 
 .city-sign {
   position: absolute;
-  z-index: 5;
-  left: clamp(24px, 9vw, 170px);
-  top: clamp(110px, 19vh, 190px);
+  z-index: 4;
+  left: clamp(28px, 8vw, 150px);
+  top: clamp(245px, 34vh, 330px);
   transform: rotate(-2deg);
-  width: min(520px, 70vw);
+  width: min(500px, 62vw);
   padding: 22px 28px;
   border-radius: 8px;
   background: var(--color-orange);
@@ -337,7 +347,7 @@
 .festival-road {
   position: absolute;
   left: 50%;
-  bottom: 42px;
+  bottom: 0;
   width: min(1540px, 120vw);
   height: min(560px, 58vh);
   transform: translateX(-50%);
@@ -399,7 +409,7 @@
   position: absolute;
   z-index: 2;
   left: 12%;
-  bottom: 184px;
+  bottom: 150px;
   width: min(1020px, 76vw);
   height: min(300px, 25vw);
   min-height: 178px;
@@ -475,41 +485,6 @@
 
 .van-wheel-right {
   right: 16%;
-}
-
-.intro-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-  width: min(760px, 100%);
-  margin: 0 auto 26px;
-}
-
-.intro-card {
-  min-height: 166px;
-  padding: 22px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 15px 32px rgba(44, 39, 51, 0.08);
-}
-
-.intro-card h2 {
-  margin: 22px 0 8px;
-  font-size: 18px;
-  line-height: 1.15;
-}
-
-.intro-card p {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-.intro-icon {
-  color: var(--color-orange);
-  font-size: 18px;
-  font-weight: 900;
 }
 
 .route-ribbon {
@@ -1816,11 +1791,6 @@
 }
 
 @media (max-width: 900px) {
-  .intro-grid {
-    grid-template-columns: minmax(0, 1fr);
-    width: min(520px, 100%);
-  }
-
   .route-ribbon {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -1838,8 +1808,9 @@
   }
 
   .city-sign {
-    top: 155px;
+    top: 310px;
     left: 8vw;
+    width: min(480px, 76vw);
   }
 }
 
@@ -1849,13 +1820,13 @@
   }
 
   .start-hero {
-    min-height: 620px;
+    min-height: 690px;
   }
 
   .city-sign {
     width: 82vw;
     padding: 16px;
-    top: 170px;
+    top: 305px;
   }
 
   .festival-road {
@@ -1865,7 +1836,7 @@
 
   .festival-van {
     height: 178px;
-    bottom: 188px;
+    bottom: 156px;
   }
 
   .van-window {
