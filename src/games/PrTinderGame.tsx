@@ -193,27 +193,20 @@ function PrTinderGame({ onFinish }: PrTinderGameProps) {
   }
 
   useEffect(() => {
-    if (isStarted && status === null) {
-      const shuffled = [...diffCards].sort(() => Math.random() - 0.5)
-      setShuffledCards(shuffled)
-    }
-  }, [isStarted, status])
-
-  useEffect(() => {
     if (!isStarted || status !== null) return
 
-    if (secondsLeft <= 0) {
-      const result: PrTinderGameResult =
-        reviewedCount >= MIN_CARDS_FOR_SUCCESS ? 'success' : 'fail'
-      setStatus(result)
-      setIsStarted(false)
-      onFinish(result)
-      return
-    }
-
     const id = window.setTimeout(() => {
+      if (secondsLeft <= 0) {
+        const result: PrTinderGameResult =
+          reviewedCount >= MIN_CARDS_FOR_SUCCESS ? 'success' : 'fail'
+        setStatus(result)
+        setIsStarted(false)
+        onFinish(result)
+        return
+      }
+
       setSecondsLeft((prev) => prev - 1)
-    }, 1000)
+    }, secondsLeft <= 0 ? 0 : 1000)
 
     return () => window.clearTimeout(id)
   }, [isStarted, secondsLeft, status, reviewedCount, onFinish])
@@ -224,6 +217,7 @@ function PrTinderGame({ onFinish }: PrTinderGameProps) {
     setSecondsLeft(DURATION_SECONDS)
     setStatus(null)
     setLastFeedback(null)
+    setShuffledCards([...diffCards].sort(() => Math.random() - 0.5))
     setIsStarted(true)
   }
 
@@ -260,12 +254,12 @@ function PrTinderGame({ onFinish }: PrTinderGameProps) {
     <div className="pr-tinder-root">
       <div className="pr-tinder-header">
         <p className="pr-tinder-rules">
-          Оценивай PR за 60 секунд. Нужно успеть оценить 12+ карточек.
+          Оценивай diff-карточки как на code review. Нужно успеть разобрать
+          минимум {MIN_CARDS_FOR_SUCCESS} карточек за минуту.
         </p>
-
         <div className="pr-tinder-header-row">
           <div className="pr-tinder-timer">
-            Время:{' '}
+            Осталось времени:{' '}
             <span
               className={
                 secondsLeft <= 10 && isStarted && status === null
@@ -279,7 +273,6 @@ function PrTinderGame({ onFinish }: PrTinderGameProps) {
           <div className="pr-tinder-counter">
             Оценено: <span className="pr-tinder-counter-value">{reviewedCount}</span>
           </div>
-
           {!isStarted && status === null && (
             <button
               type="button"
@@ -293,13 +286,13 @@ function PrTinderGame({ onFinish }: PrTinderGameProps) {
       </div>
 
       <div className="pr-tinder-main">
-        {!isStarted && status === null && (
+        {(!isStarted || status !== null) && status === null && (
           <div className="pr-tinder-placeholder">
-            <p>Нажми «Начать», чтобы запустить таймер</p>
+            Нажми «Начать», чтобы получить первый diff.
           </div>
         )}
 
-        {isStarted && currentCard && (
+        {isStarted && status === null && currentCard && (
           <div className="pr-tinder-card">
             <div className="pr-tinder-diff">
               <div className="pr-tinder-diff-old">
@@ -317,45 +310,47 @@ function PrTinderGame({ onFinish }: PrTinderGameProps) {
         {lastFeedback && (
           <div className="pr-tinder-feedback">{lastFeedback}</div>
         )}
+
+        {isStarted && status === null && (
+          <div className="pr-tinder-actions">
+            {answerOptions.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className="pr-tinder-action-btn"
+                style={{ borderColor: option.color, color: option.color }}
+                onClick={() => handleAnswer(option.id)}
+              >
+                <span className="pr-tinder-action-icon">{option.icon}</span>
+                <span className="pr-tinder-action-label">{option.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {status !== null && (
+          <div
+            className={`pr-tinder-result ${
+              status === 'success'
+                ? 'pr-tinder-result-success'
+                : 'pr-tinder-result-fail'
+            }`}
+          >
+            <h3>
+              {status === 'success'
+                ? 'Code review принят!'
+                : 'Ревью не успело в прод'}
+            </h3>
+            <p>
+              Ты оценил(а) <strong>{reviewedCount}</strong> карточек за минуту.
+            </p>
+            <p>
+              Для успеха нужно было разобрать минимум{' '}
+              <strong>{MIN_CARDS_FOR_SUCCESS}</strong>.
+            </p>
+          </div>
+        )}
       </div>
-
-      {isStarted && (
-        <div className="pr-tinder-actions">
-          {answerOptions.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              className="pr-tinder-action-btn"
-              style={{ borderColor: option.color }}
-              onClick={() => handleAnswer(option.id)}
-              disabled={status !== null}
-            >
-              <span className="pr-tinder-action-icon">{option.icon}</span>
-              <span className="pr-tinder-action-label">{option.label}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {status !== null && (
-        <div
-          className={`pr-tinder-result ${
-            status === 'success' ? 'pr-tinder-result-success' : 'pr-tinder-result-fail'
-          }`}
-        >
-          <h3>
-            {status === 'success' ? 'Отлично! 🎉' : 'Можно лучше 💪'}
-          </h3>
-          <p>
-            Ты оценил <strong>{reviewedCount}</strong> карточек за 60 секунд.
-          </p>
-          <p>
-            {status === 'success'
-              ? 'Ты настоящий PR-ревьюер! Продолжай в том же духе.'
-              : `Нужно было оценить хотя бы ${MIN_CARDS_FOR_SUCCESS}, но практика сделает тебя лучше!`}
-          </p>
-        </div>
-      )}
     </div>
   )
 }

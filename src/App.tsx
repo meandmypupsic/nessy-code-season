@@ -235,15 +235,49 @@ type StartScreenProps = {
 
 function StartScreen({ onStart }: StartScreenProps) {
   return (
-    <div className="screen">
-      <h1 className="title">Забег AI для SDLC</h1>
-      <p className="subtitle">
-        Введи своё имя, пройди мини‑игры от Nessy и узнай, насколько хорошо ты знаком с лором Nestor 2025 года.
-      </p>
-      <div className="buttons-row">
-        <button className="btn primary" onClick={onStart}>
-          Начать игру
-        </button>
+    <div className="screen start-screen">
+      <section className="start-hero">
+        <div className="city-sign">Санкт-Петербург</div>
+        <div className="hero-copy">
+          <p className="eyebrow">Сезон кода</p>
+          <h1 className="title hero-title">Забег AI для SDLC</h1>
+          <p className="subtitle hero-subtitle">
+            Введи своё имя, пройди мини-игры от Nessy и узнай, насколько хорошо ты знаком с лором Nestor 2025 года.
+          </p>
+          <div className="buttons-row">
+            <button className="btn primary" onClick={onStart}>
+              Начать игру
+            </button>
+          </div>
+        </div>
+        <div className="festival-road" aria-hidden="true">
+          <div className="festival-van">
+            <div className="van-window van-window-left" />
+            <div className="van-window van-window-mid" />
+            <div className="van-window van-window-front" />
+            <div className="van-wheel van-wheel-left" />
+            <div className="van-wheel van-wheel-right" />
+          </div>
+          <div className="road-line" />
+          <div className="grass-bed" />
+        </div>
+      </section>
+      <div className="intro-grid">
+        <article className="intro-card">
+          <span className="intro-icon">01</span>
+          <h2>Мини-игры</h2>
+          <p>Пять коротких заданий про продукты, процессы и лор Nestor.</p>
+        </article>
+        <article className="intro-card">
+          <span className="intro-icon">02</span>
+          <h2>Фестиваль</h2>
+          <p>Светлая летняя стилистика с дорожными плашками и акцентами сезона.</p>
+        </article>
+        <article className="intro-card">
+          <span className="intro-icon">03</span>
+          <h2>Открытка</h2>
+          <p>В финале получишь персональный текст от Nessy.</p>
+        </article>
       </div>
     </div>
   )
@@ -326,7 +360,13 @@ function GameLayout({
 }: GameLayoutProps) {
   return (
     <div className="screen">
+      <div className="route-ribbon" aria-hidden="true">
+        <span>Ломаем шаблоны</span>
+        <strong>Сезон кода</strong>
+        <span>Вдохновляем других</span>
+      </div>
       <header className="game-header">
+        <p className="eyebrow">Игровой маршрут</p>
         <h2 className="title">{title}</h2>
         <p className="subtitle">{description}</p>
       </header>
@@ -341,13 +381,13 @@ function GameLayout({
         )}
         {result === 'success' && (
           <div className="game-result-box success">
-            <h3>Успех! 🎄</h3>
+            <h3>Успех!</h3>
             <p>Ты блестяще справился с этим заданием.</p>
           </div>
         )}
         {result === 'fail' && (
           <div className="game-result-box fail">
-            <h3>Не в этот раз ❄️</h3>
+            <h3>Не в этот раз</h3>
             <p>Ничего страшного, впереди ещё задания — можно реабилитироваться!</p>
           </div>
         )}
@@ -508,7 +548,12 @@ function SummaryScreen({ playerName, results, onRestart }: SummaryScreenProps) {
   }
 
   return (
-    <div className="screen">
+    <div className="screen summary-screen">
+      <div className="route-ribbon route-ribbon-summary" aria-hidden="true">
+        <span>Технологии вперед</span>
+        <strong>Сезон кода</strong>
+        <span>Финиш</span>
+      </div>
       <h2 className="title">Итоги игры</h2>
       <p className="subtitle">
         {playerName ? `${playerName}, ` : ''}вот как ты справился с новогодними заданиями про Nestor:

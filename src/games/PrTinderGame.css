@@ -15,7 +15,7 @@
 
 .pr-tinder-rules {
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-secondary);
   margin: 0;
   text-align: center;
 }
@@ -66,17 +66,17 @@
   align-items: center;
   justify-content: center;
   min-height: 200px;
-  background: #f5f5f5;
+  background: #fff8df;
   border-radius: 12px;
-  color: #999;
+  color: var(--color-annotation);
 }
 
 .pr-tinder-card {
   background: #fff;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
+  border: 3px solid var(--color-dark);
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 7px 8px 0 rgba(44, 39, 51, 0.14);
 }
 
 .pr-tinder-diff {
@@ -93,12 +93,12 @@
 }
 
 .pr-tinder-diff-old {
-  background: #ffebee;
-  border-bottom: 1px solid #e0e0e0;
+  background: #fff0e8;
+  border-bottom: 3px solid var(--color-dark);
 }
 
 .pr-tinder-diff-new {
-  background: #e8f5e9;
+  background: #ecfdf3;
 }
 
 .pr-tinder-diff-label {
@@ -124,8 +124,8 @@
 }
 
 .pr-tinder-feedback {
-  background: #fff3e0;
-  border: 1px solid #ffb74d;
+  background: #fff8df;
+  border: 2px solid #fdb124;
   border-radius: 8px;
   padding: 12px 16px;
   font-size: 14px;
@@ -152,7 +152,7 @@
   gap: 4px;
   padding: 12px 16px;
   background: #fff;
-  border: 2px solid;
+  border: 3px solid;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -160,8 +160,8 @@
 }
 
 .pr-tinder-action-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translate(2px, 2px);
+  box-shadow: 3px 4px 0 rgba(44, 39, 51, 0.18);
 }
 
 .pr-tinder-action-btn:active:not(:disabled) {
@@ -186,8 +186,8 @@
 
 .pr-tinder-result {
   background: #fff;
-  border: 2px solid;
-  border-radius: 12px;
+  border: 3px solid;
+  border-radius: 8px;
   padding: 20px;
   text-align: center;
   animation: slideUp 0.3s ease-in-out;
@@ -199,13 +199,13 @@
 }
 
 .pr-tinder-result-success {
-  border-color: #4caf50;
-  background: #e8f5e9;
+  border-color: #24633f;
+  background: #ecfdf3;
 }
 
 .pr-tinder-result-fail {
-  border-color: #ff9800;
-  background: #fff3e0;
+  border-color: #f2763a;
+  background: #fff8df;
 }
 
 .pr-tinder-result h3 {
@@ -216,7 +216,7 @@
 .pr-tinder-result p {
   margin: 8px 0;
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .pr-tinder-result strong {

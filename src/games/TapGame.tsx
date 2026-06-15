@@ -27,19 +27,19 @@ function TapGame({ durationSeconds, onFinish }: TapGameProps) {
   useEffect(() => {
     if (!isStarted || status !== null) return
 
-    if (secondsLeft <= 0) {
-      const isSuccess =
-        tapCountRef.current >= MIN_TAPS_FOR_SUCCESS && tapCountRef.current <= MAX_TAPS_FOR_SUCCESS
-      const result: TapGameResult = isSuccess ? 'success' : 'fail'
-      setStatus(result)
-      setIsStarted(false)
-      onFinish(result)
-      return
-    }
-
     const id = window.setTimeout(() => {
+      if (secondsLeft <= 0) {
+        const isSuccess =
+          tapCountRef.current >= MIN_TAPS_FOR_SUCCESS && tapCountRef.current <= MAX_TAPS_FOR_SUCCESS
+        const result: TapGameResult = isSuccess ? 'success' : 'fail'
+        setStatus(result)
+        setIsStarted(false)
+        onFinish(result)
+        return
+      }
+
       setSecondsLeft((prev) => prev - 1)
-    }, 1000)
+    }, secondsLeft <= 0 ? 0 : 1000)
 
     return () => window.clearTimeout(id)
   }, [isStarted, secondsLeft, status, onFinish])
@@ -133,4 +133,3 @@ function TapGame({ durationSeconds, onFinish }: TapGameProps) {
 }
 
 export default TapGame
-

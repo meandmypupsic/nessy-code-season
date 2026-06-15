@@ -48,16 +48,16 @@ function PuzzleGame({ durationSeconds, onFinish }: PuzzleGameProps) {
   useEffect(() => {
     if (!isStarted || status !== null) return
 
-    if (secondsLeft <= 0) {
-      setStatus('fail')
-      onFinish('fail')
-      setIsStarted(false)
-      return
-    }
-
     const id = window.setTimeout(() => {
+      if (secondsLeft <= 0) {
+        setStatus('fail')
+        onFinish('fail')
+        setIsStarted(false)
+        return
+      }
+
       setSecondsLeft((prev) => prev - 1)
-    }, 1000)
+    }, secondsLeft <= 0 ? 0 : 1000)
 
     return () => clearTimeout(id)
   }, [isStarted, secondsLeft, status, onFinish])
