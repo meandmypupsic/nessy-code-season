@@ -24,6 +24,19 @@
   --color-bg-secondary: #ffffff;
   --color-text-primary: #2c2733;
   --color-text-secondary: #5f6068;
+  --type-xxs: 10px;
+  --type-xs: 11px;
+  --type-sm: 12px;
+  --type-caption: 13px;
+  --type-body: 14px;
+  --type-body-lg: 16px;
+  --type-lead: 18px;
+  --type-subtitle: 20px;
+  --type-title-sm: 24px;
+  --type-title-md: 30px;
+  --type-title-lg: 40px;
+  --type-hero: 56px;
+  --type-display: 64px;
 }
 
 a {
@@ -109,7 +122,7 @@ button {
   font-family: 'Tinkoff Sans';
   font-style: normal;
   font-weight: 700;
-  font-size: 50px;
+  font-size: var(--type-hero);
   line-height: 56px;
   font-feature-settings: 'liga' off;
   color: #333333;
@@ -156,7 +169,7 @@ button {
   font-family: 'Neue Haas Unica W1G';
   font-style: normal;
   font-weight: 400;
-  font-size: 15px;
+  font-size: var(--type-body-lg);
   line-height: 24px;
   color: #333333;
   flex: none;
@@ -177,7 +190,7 @@ button {
   font-family: 'Neue Haas Unica W1G';
   font-style: normal;
   font-weight: 400;
-  font-size: 15px;
+  font-size: var(--type-body-lg);
   line-height: 24px;
   color: #9299A2;
   flex: none;
@@ -277,7 +290,7 @@ button {
   font-family: 'Tinkoff Sans';
   font-style: normal;
   font-weight: 500;
-  font-size: 20px;
+  font-size: var(--type-subtitle);
   line-height: 28px;
   font-feature-settings: 'liga' off;
   color: #333333;
@@ -308,7 +321,7 @@ button {
   font-family: 'Neue Haas Unica W1G';
   font-style: normal;
   font-weight: 400;
-  font-size: 15px;
+  font-size: var(--type-body-lg);
   line-height: 24px;
   color: #333333;
   flex: none;
@@ -406,7 +419,7 @@ button {
   font-family: 'SF Pro Text';
   font-style: normal;
   font-weight: 400;
-  font-size: 14px;
+  font-size: var(--type-body);
   line-height: 17px;
   color: #000000;
   flex: none;
@@ -423,7 +436,7 @@ button {
   font-family: 'Neue Haas Unica W1G';
   font-style: normal;
   font-weight: 400;
-  font-size: 15px;
+  font-size: var(--type-body-lg);
   line-height: 24px;
   color: #9299A2;
   flex: none;
@@ -465,7 +478,7 @@ button {
   font-family: 'Tinkoff Sans';
   font-style: normal;
   font-weight: 500;
-  font-size: 36px;
+  font-size: var(--type-title-lg);
   line-height: 40px;
   font-feature-settings: 'liga' off;
   color: #333333;
@@ -612,7 +625,7 @@ button {
   font-family: 'Tinkoff Sans';
   font-style: normal;
   font-weight: 500;
-  font-size: 28px;
+  font-size: var(--type-title-md);
   line-height: 32px;
   font-feature-settings: 'liga' off;
   color: #333333;
@@ -700,7 +713,7 @@ button {
   font-family: 'Neue Haas Unica W1G';
   font-style: normal;
   font-weight: 400;
-  font-size: 15px;
+  font-size: var(--type-body-lg);
   line-height: 24px;
   color: #333333;
 }
@@ -709,7 +722,7 @@ button {
   font-family: 'Neue Haas Unica W1G';
   font-style: normal;
   font-weight: 400;
-  font-size: 15px;
+  font-size: var(--type-body-lg);
   line-height: 24px;
   color: #9299A2;
 }
@@ -821,7 +834,7 @@ button {
   font-family: 'Neue Haas Unica W1G';
   font-style: normal;
   font-weight: 400;
-  font-size: 29.0417px;
+  font-size: var(--type-title-md);
   line-height: 44px;
   flex: none;
   order: 0;
@@ -836,7 +849,7 @@ button {
   font-family: 'Neue Haas Unica W1G';
   font-style: normal;
   font-weight: 400;
-  font-size: 29.0767px;
+  font-size: var(--type-title-md);
   line-height: 44px;
   color: rgba(255, 255, 255, 0.7);
   flex: none;

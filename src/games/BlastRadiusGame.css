@@ -22,7 +22,7 @@
 }
 
 .blast-radius-timer {
-  font-size: 28px;
+  font-size: var(--type-title-md);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -51,12 +51,12 @@
 }
 
 .incident-label {
-  font-size: 12px;
+  font-size: var(--type-sm);
   opacity: 0.9;
 }
 
 .incident-text {
-  font-size: 16px;
+  font-size: var(--type-body-lg);
   font-weight: 600;
 }
 
@@ -70,7 +70,7 @@
 
 .blast-radius-instructions p {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--type-body);
   color: #495057;
 }
 
@@ -86,7 +86,7 @@
   width: 100%;
   border-collapse: collapse;
   background: white;
-  font-size: 13px;
+  font-size: var(--type-caption);
 }
 
 .blast-radius-table th,
@@ -126,7 +126,7 @@
 }
 
 .segment-size {
-  font-size: 11px;
+  font-size: var(--type-xs);
   color: #6c757d;
   font-weight: 400;
 }
@@ -141,11 +141,11 @@
   color: #212529;
   margin-bottom: 4px;
   font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-  font-size: 12px;
+  font-size: var(--type-sm);
 }
 
 .flag-description {
-  font-size: 11px;
+  font-size: var(--type-xs);
   color: #6c757d;
 }
 
@@ -159,7 +159,7 @@
   padding: 8px 12px;
   border: 2px solid var(--color-dark);
   border-radius: 6px;
-  font-size: 12px;
+  font-size: var(--type-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -196,7 +196,7 @@
 
 .btn-finish {
   padding: 14px 32px;
-  font-size: 16px;
+  font-size: var(--type-body-lg);
   font-weight: 600;
   color: var(--color-dark);
   background: #fdb124;
@@ -224,7 +224,7 @@
 }
 
 .results-title {
-  font-size: 24px;
+  font-size: var(--type-title-sm);
   font-weight: 700;
   color: #212529;
   text-align: center;
@@ -246,14 +246,14 @@
 }
 
 .score-label {
-  font-size: 12px;
+  font-size: var(--type-sm);
   color: #6c757d;
   margin-bottom: 8px;
   font-weight: 500;
 }
 
 .score-value {
-  font-size: 32px;
+  font-size: var(--type-title-md);
   font-weight: 700;
   margin-bottom: 4px;
 }
@@ -267,7 +267,7 @@
 }
 
 .score-target {
-  font-size: 11px;
+  font-size: var(--type-xs);
   color: #adb5bd;
 }
 
@@ -283,13 +283,13 @@
 }
 
 .total-label {
-  font-size: 16px;
+  font-size: var(--type-body-lg);
   color: #495057;
   font-weight: 500;
 }
 
 .total-value {
-  font-size: 36px;
+  font-size: var(--type-title-lg);
   font-weight: 700;
 }
 
@@ -304,7 +304,7 @@
 
 .results-explanation h4,
 .correct-solution-hint h4 {
-  font-size: 16px;
+  font-size: var(--type-body-lg);
   font-weight: 600;
   color: #212529;
   margin: 0 0 12px 0;
@@ -319,7 +319,7 @@
 
 .results-explanation li,
 .correct-solution-hint li {
-  font-size: 14px;
+  font-size: var(--type-body);
   color: #495057;
   margin-bottom: 8px;
   line-height: 1.5;
@@ -330,7 +330,7 @@
   padding: 2px 6px;
   border-radius: 4px;
   font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-  font-size: 12px;
+  font-size: var(--type-sm);
   color: #d63384;
 }
 
@@ -347,7 +347,7 @@
   }
 
   .blast-radius-table {
-    font-size: 11px;
+    font-size: var(--type-xs);
   }
 
   .flag-column {
@@ -358,7 +358,7 @@
   .toggle-button {
     min-width: 50px;
     padding: 6px 8px;
-    font-size: 10px;
+    font-size: var(--type-xxs);
   }
 
   .scores-grid {
