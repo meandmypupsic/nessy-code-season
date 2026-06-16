@@ -221,6 +221,11 @@
   gap: 4px;
 }
 
+.game-header .subtitle {
+  font-size: var(--type-lead);
+  line-height: 1.45;
+}
+
 .game-content {
   margin-top: 8px;
   padding: 24px;

@@ -1,0 +1,241 @@
+.odd-root {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.odd-topbar {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr 1fr;
+  gap: 10px;
+}
+
+.odd-meter,
+.odd-timer {
+  min-height: 70px;
+  padding: 12px 14px;
+  border: 3px solid var(--color-dark);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 4px 5px 0 rgba(44, 39, 51, 0.16);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.odd-meter span,
+.odd-timer span {
+  color: var(--color-text-secondary);
+  font-size: var(--type-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.odd-meter strong,
+.odd-timer strong {
+  color: var(--color-dark);
+  font-size: var(--type-title-sm);
+  line-height: 1;
+}
+
+.odd-timer {
+  align-items: center;
+  background: #2c2733;
+  color: #ffffff;
+}
+
+.odd-timer span,
+.odd-timer strong {
+  color: inherit;
+}
+
+.odd-timer-danger {
+  color: #f2763a !important;
+}
+
+.odd-set-header {
+  padding: 16px 18px;
+  border: 3px solid var(--color-dark);
+  border-radius: 8px;
+  background: #fdb124;
+  box-shadow: 5px 6px 0 rgba(44, 39, 51, 0.16);
+}
+
+.odd-set-header p,
+.odd-set-header span {
+  display: block;
+  margin: 0;
+}
+
+.odd-set-header p {
+  color: var(--color-dark);
+  font-size: var(--type-subtitle);
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.odd-set-header span {
+  margin-top: 4px;
+  color: rgba(44, 39, 51, 0.76);
+  font-size: var(--type-body);
+}
+
+.odd-start {
+  padding: 22px;
+  border: 3px solid var(--color-dark);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 5px 6px 0 rgba(44, 39, 51, 0.16);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.odd-start h3,
+.odd-start p {
+  margin: 0;
+}
+
+.odd-start h3 {
+  color: var(--color-dark);
+  font-size: var(--type-title-sm);
+  line-height: 1.12;
+  font-weight: 900;
+}
+
+.odd-start p {
+  max-width: 620px;
+  color: var(--color-text-secondary);
+  font-size: var(--type-body-lg);
+  line-height: 1.45;
+}
+
+.odd-card-list {
+  display: grid;
+  gap: 10px;
+}
+
+.odd-word-card {
+  min-height: 74px;
+  padding: 12px 16px;
+  border: 3px solid var(--color-dark);
+  border-radius: 8px;
+  background: #ffffff;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  box-shadow: 4px 5px 0 rgba(44, 39, 51, 0.14);
+  color: var(--color-dark);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    background-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.odd-word-card:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 3px 0 rgba(44, 39, 51, 0.18);
+}
+
+.odd-word-card-selected {
+  background: #fff0e8;
+  box-shadow: 2px 3px 0 rgba(44, 39, 51, 0.2);
+  transform: translate(2px, 2px);
+}
+
+.odd-choice-dot {
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--color-dark);
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 4px #ffffff;
+}
+
+.odd-word-card-selected .odd-choice-dot {
+  background: #f2763a;
+}
+
+.odd-word-label {
+  color: var(--color-dark);
+  font-size: var(--type-lead);
+  font-weight: 900;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.odd-actions {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.odd-feedback {
+  padding: 9px 12px;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: var(--type-body);
+  font-weight: 900;
+}
+
+.odd-feedback-correct {
+  color: #24633f;
+}
+
+.odd-feedback-wrong {
+  color: #9a3412;
+}
+
+.odd-result {
+  padding: 14px 16px;
+  border: 3px solid currentColor;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.odd-result h3,
+.odd-result p {
+  margin: 0;
+}
+
+.odd-result h3 {
+  font-size: var(--type-body-lg);
+}
+
+.odd-result p {
+  margin-top: 4px;
+  color: var(--color-text-secondary);
+}
+
+.odd-result-success {
+  color: #24633f;
+}
+
+.odd-result-fail {
+  color: #9a3412;
+}
+
+@media (max-width: 640px) {
+  .odd-topbar {
+    grid-template-columns: 1fr;
+  }
+
+  .odd-meter,
+  .odd-timer {
+    min-height: 58px;
+  }
+
+  .odd-word-card {
+    min-height: 66px;
+  }
+}
