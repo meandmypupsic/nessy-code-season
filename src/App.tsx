@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import MatchPairsGame from './games/MatchPairsGame'
 import OddOneOutGame from './games/OddOneOutGame'
 import { POSTCARDS, renderPostcard } from './postcards'
 import nessyNewYearImage from './assets/nessy-new-year.png'
@@ -116,13 +117,13 @@ const AVAILABLE_GAMES: GameDefinition[] = [
   //     'У тебя есть набор кубиков — фичи Nestor. Собери такую конфигурацию, которая подойдёт для решения задачи: Создание алгоритма банковского скоринга.',
   //   render: (onFinish) => <CraftingGame onFinish={onFinish} />,
   // },
-  // {
-  //   id: 'match-pairs',
-  //   title: 'Что такое Nestor?',
-  //   description:
-  //     'С одной стороны — продукты вселенной Nestor, с другой — твои повседневные инструменты. Выбери слева название сервиса Nestor, а потом кликни справа по связанному продукту, чтобы собрать все пары.',
-  //   render: (onFinish) => <MatchPairsGame onFinish={onFinish} />,
-  // },
+  {
+    id: 'match-pairs',
+    title: 'Найди пару',
+    description:
+      'Открывай по две карточки и сопоставляй оранжевые проблемы в SDLC с синими AI-решениями. За 60 секунд нужно найти 6 пар.',
+    render: (onFinish) => <MatchPairsGame onFinish={onFinish} />,
+  },
   // {
   //   id: 'tap',
   //   title: 'Тапалка: процент кода',

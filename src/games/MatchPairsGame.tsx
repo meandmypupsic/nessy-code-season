@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export type MatchPairsGameResult = 'success' | 'fail'
 
@@ -6,48 +6,115 @@ export type MatchPairsGameProps = {
   onFinish: (result: MatchPairsGameResult) => void
 }
 
-type LeftItemId = 'nestor' | 'nestor-data' | 'nestor-search' | 'nestor-review'
-type RightItemId = 'ide' | 'gitlab' | 'helicopter' | 'confluence'
-
 type Pair = {
-  leftId: LeftItemId
-  leftLabel: string
-  rightId: RightItemId
-  rightLabel: string
+  id: string
+  problem: string
+  solution: string
 }
 
-const PAIRS: Pair[] = [
+type Card = {
+  id: string
+  pairId: string
+  kind: 'problem' | 'solution'
+  label: string
+}
+
+const ROUND_SECONDS = 60
+const PAIRS_PER_ROUND = 6
+const MISMATCH_HIDE_DELAY_MS = 1100
+
+const PAIR_BANK: Pair[] = [
   {
-    leftId: 'nestor',
-    leftLabel: 'Nestor',
-    rightId: 'ide',
-    rightLabel: 'IDE',
+    id: 'slow-code-review',
+    problem: 'Долгое ревью кода',
+    solution: 'AI Code Reviewer',
   },
   {
-    leftId: 'nestor-data',
-    leftLabel: 'Nestor Data',
-    rightId: 'helicopter',
-    rightLabel: 'Helicopter',
+    id: 'missing-tests',
+    problem: 'Не хватает тестов',
+    solution: 'AI Test Generator',
   },
   {
-    leftId: 'nestor-search',
-    leftLabel: 'Nestor Search',
-    rightId: 'confluence',
-    rightLabel: 'Confluence',
+    id: 'unclear-requirements',
+    problem: 'Нечёткие требования',
+    solution: 'AI Product Analyst',
   },
   {
-    leftId: 'nestor-review',
-    leftLabel: 'Nestor Review',
-    rightId: 'gitlab',
-    rightLabel: 'GitLab',
+    id: 'legacy-onboarding',
+    problem: 'Сложный legacy-код',
+    solution: 'AI Code Explainer',
+  },
+  {
+    id: 'flaky-tests',
+    problem: 'Флейковые тесты',
+    solution: 'AI Test Triage',
+  },
+  {
+    id: 'security-gaps',
+    problem: 'Пропущенные уязвимости',
+    solution: 'AI Security Scanner',
+  },
+  {
+    id: 'slow-debugging',
+    problem: 'Долгий поиск бага',
+    solution: 'AI Debug Assistant',
+  },
+  {
+    id: 'poor-docs',
+    problem: 'Устаревшая документация',
+    solution: 'AI Docs Writer',
+  },
+  {
+    id: 'manual-release-notes',
+    problem: 'Ручные release notes',
+    solution: 'AI Changelog Builder',
+  },
+  {
+    id: 'incident-noise',
+    problem: 'Шум в инцидентах',
+    solution: 'AI Incident Summarizer',
+  },
+  {
+    id: 'slow-estimation',
+    problem: 'Неточная оценка задач',
+    solution: 'AI Estimation Assistant',
+  },
+  {
+    id: 'merge-conflicts',
+    problem: 'Частые merge conflicts',
+    solution: 'AI Merge Helper',
+  },
+  {
+    id: 'duplicate-bugs',
+    problem: 'Дубли баг-репортов',
+    solution: 'AI Issue Deduplicator',
+  },
+  {
+    id: 'bad-logs',
+    problem: 'Непонятные логи',
+    solution: 'AI Log Analyzer',
+  },
+  {
+    id: 'manual-refactoring',
+    problem: 'Ручной рефакторинг',
+    solution: 'AI Refactoring Agent',
+  },
+  {
+    id: 'knowledge-search',
+    problem: 'Долгий поиск контекста',
+    solution: 'AI Knowledge Search',
+  },
+  {
+    id: 'api-contract-drift',
+    problem: 'Расхождение API-контрактов',
+    solution: 'AI Contract Checker',
+  },
+  {
+    id: 'pr-description',
+    problem: 'Пустое описание PR',
+    solution: 'AI PR Summarizer',
   },
 ]
-
-type RightOption = {
-  id: RightItemId
-  label: string
-  leftId: LeftItemId
-}
 
 function shuffle<T>(array: T[]): T[] {
   const copy = [...array]
@@ -58,191 +125,194 @@ function shuffle<T>(array: T[]): T[] {
   return copy
 }
 
+function buildRoundCards() {
+  const roundPairs = shuffle(PAIR_BANK).slice(0, PAIRS_PER_ROUND)
+  return shuffle(
+    roundPairs.flatMap<Card>((pair) => [
+      {
+        id: `${pair.id}-problem`,
+        pairId: pair.id,
+        kind: 'problem',
+        label: pair.problem,
+      },
+      {
+        id: `${pair.id}-solution`,
+        pairId: pair.id,
+        kind: 'solution',
+        label: pair.solution,
+      },
+    ]),
+  )
+}
+
 function MatchPairsGame({ onFinish }: MatchPairsGameProps) {
-  const rightOptions = useMemo<RightOption[]>(
+  const [cards] = useState<Card[]>(() => buildRoundCards())
+  const [hasStarted, setHasStarted] = useState(false)
+  const [openedCardIds, setOpenedCardIds] = useState<string[]>([])
+  const [matchedPairIds, setMatchedPairIds] = useState<string[]>([])
+  const [timeLeft, setTimeLeft] = useState(ROUND_SECONDS)
+  const [isLocked, setIsLocked] = useState(false)
+  const [result, setResult] = useState<MatchPairsGameResult | null>(null)
+  const finishRef = useRef(onFinish)
+  const finishedRef = useRef(false)
+  const deadlineRef = useRef<number | null>(null)
+  const isFinished = result !== null
+
+  useEffect(() => {
+    finishRef.current = onFinish
+  }, [onFinish])
+
+  const finishGame = useCallback((nextResult: MatchPairsGameResult) => {
+    if (finishedRef.current) return
+
+    finishedRef.current = true
+    setResult(nextResult)
+    finishRef.current(nextResult)
+  }, [])
+
+  useEffect(() => {
+    if (!hasStarted || isFinished) return
+
+    if (deadlineRef.current === null) {
+      deadlineRef.current = Date.now() + ROUND_SECONDS * 1000
+    }
+
+    const timerId = window.setInterval(() => {
+      if (deadlineRef.current === null) return
+
+      const nextTimeLeft = Math.max(
+        0,
+        Math.ceil((deadlineRef.current - Date.now()) / 1000),
+      )
+
+      setTimeLeft(nextTimeLeft)
+
+      if (nextTimeLeft === 0) {
+        finishGame('fail')
+      }
+    }, 1000)
+
+    return () => window.clearInterval(timerId)
+  }, [finishGame, hasStarted, isFinished])
+
+  const openedCards = useMemo(
     () =>
-      shuffle(
-        PAIRS.map((pair) => ({
-          id: pair.rightId,
-          label: pair.rightLabel,
-          leftId: pair.leftId,
-        })),
-      ),
-    [],
+      openedCardIds
+        .map((cardId) => cards.find((card) => card.id === cardId))
+        .filter((card): card is Card => Boolean(card)),
+    [cards, openedCardIds],
   )
 
-  const [selectedLeftId, setSelectedLeftId] = useState<LeftItemId | null>(null)
-  const [selectedRightId, setSelectedRightId] = useState<RightItemId | null>(
-    null,
-  )
-  const [selectedPairs, setSelectedPairs] = useState<
-    Array<{ leftId: LeftItemId; rightId: RightItemId }>
-  >([])
-  const [isFinished, setIsFinished] = useState(false)
+  const handleCardClick = (card: Card) => {
+    if (!hasStarted || isFinished || isLocked) return
+    if (matchedPairIds.includes(card.pairId)) return
+    if (openedCardIds.includes(card.id)) return
 
-  const isAllSelected = selectedPairs.length === PAIRS.length
+    const nextOpenedCards = [...openedCards, card]
+    setOpenedCardIds(nextOpenedCards.map((openedCard) => openedCard.id))
 
-  // Получаем все выбранные leftId и rightId для блокировки
-  const selectedLeftIds = selectedPairs.map((pair) => pair.leftId)
-  const selectedRightIds = selectedPairs.map((pair) => pair.rightId)
+    if (nextOpenedCards.length < 2) return
 
-  // Проверяем правильность пар после завершения
-  const correctPairs = useMemo(() => {
-    if (!isFinished) return []
-    return selectedPairs.filter((pair) => {
-      const correctPair = PAIRS.find((p) => p.leftId === pair.leftId)
-      return correctPair?.rightId === pair.rightId
-    })
-  }, [selectedPairs, isFinished])
+    const [firstCard, secondCard] = nextOpenedCards
+    const isMatch =
+      firstCard.pairId === secondCard.pairId &&
+      firstCard.kind !== secondCard.kind
 
-  const resetSelection = () => {
-    setSelectedLeftId(null)
-    setSelectedRightId(null)
-  }
+    if (isMatch) {
+      const nextMatchedPairIds = [...matchedPairIds, firstCard.pairId]
+      setMatchedPairIds(nextMatchedPairIds)
+      setOpenedCardIds([])
 
-  const handleLeftClick = (leftId: LeftItemId) => {
-    if (isFinished) return
-    if (selectedLeftIds.includes(leftId)) return
+      if (nextMatchedPairIds.length === PAIRS_PER_ROUND) {
+        finishGame('success')
+      }
 
-    // повторный клик снимает выделение
-    if (selectedLeftId === leftId) {
-      resetSelection()
       return
     }
-    setSelectedLeftId(leftId)
-    // сбрасываем возможный ранее выбранный правый вариант
-    setSelectedRightId(null)
-  }
 
-  const handleRightClick = (rightId: RightItemId) => {
-    if (isFinished) return
-    if (!selectedLeftId) return
-    if (selectedRightIds.includes(rightId)) return
-
-    // Фиксируем пару
-    const newPair = { leftId: selectedLeftId, rightId }
-    const nextPairs = [...selectedPairs, newPair]
-    setSelectedPairs(nextPairs)
-    resetSelection()
-
-    // Если все пары выбраны, показываем результат
-    if (nextPairs.length === PAIRS.length) {
-      setIsFinished(true)
-      const allCorrect = nextPairs.every((pair) => {
-        const correctPair = PAIRS.find((p) => p.leftId === pair.leftId)
-        return correctPair?.rightId === pair.rightId
-      })
-      onFinish(allCorrect ? 'success' : 'fail')
-    }
+    setIsLocked(true)
+    window.setTimeout(() => {
+      setOpenedCardIds([])
+      setIsLocked(false)
+    }, MISMATCH_HIDE_DELAY_MS)
   }
 
   return (
     <div className="match-pairs-root">
-      <div className="match-pairs-layout">
-        <div className="match-pairs-column">
-          <p className="match-pairs-column-title">Вселенная Nestor</p>
-          <div className="match-pairs-list">
-            {PAIRS.map((pair) => {
-              const isSelected = selectedLeftId === pair.leftId
-              const isBlocked = selectedLeftIds.includes(pair.leftId)
-              const selectedPair = selectedPairs.find(
-                (p) => p.leftId === pair.leftId,
-              )
-              const isCorrect =
-                isFinished &&
-                selectedPair &&
-                PAIRS.find((p) => p.leftId === pair.leftId)?.rightId ===
-                  selectedPair.rightId
-
-              return (
-                <button
-                  key={pair.leftId}
-                  type="button"
-                  className={[
-                    'match-pairs-card',
-                    'match-pairs-card-left',
-                    isSelected ? 'match-pairs-card-selected' : '',
-                    isBlocked && !isFinished ? 'match-pairs-card-pending' : '',
-                    isFinished && isCorrect
-                      ? 'match-pairs-card-matched'
-                      : '',
-                    isFinished && !isCorrect && selectedPair
-                      ? 'match-pairs-card-wrong'
-                      : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                  onClick={() => handleLeftClick(pair.leftId)}
-                  disabled={isBlocked || isFinished}
-                >
-                  <span className="match-pairs-card-label">{pair.leftLabel}</span>
-                </button>
-              )
-            })}
+      {!hasStarted && (
+        <div className="match-pairs-intro">
+          <div className="match-pairs-intro-copy">
+            <p className="match-pairs-intro-title">Правила раунда</p>
+            <p>
+              На поле 12 закрытых карточек. Открывай по две за ход и ищи пары:
+              оранжевая карточка — проблема в SDLC, синяя — AI-решение.
+            </p>
           </div>
+          <button
+            className="btn primary match-pairs-start"
+            type="button"
+            onClick={() => setHasStarted(true)}
+          >
+            Начать раунд
+          </button>
         </div>
+      )}
 
-        <div className="match-pairs-column">
-          <p className="match-pairs-column-title">Продукты и площадки</p>
-          <div className="match-pairs-list">
-            {rightOptions.map((option) => {
-              const isSelectedRight = selectedRightId === option.id
-              const isBlocked = selectedRightIds.includes(option.id)
-              const selectedPair = selectedPairs.find(
-                (p) => p.rightId === option.id,
-              )
-              const isCorrect =
-                isFinished &&
-                selectedPair &&
-                PAIRS.find((p) => p.leftId === selectedPair.leftId)?.rightId ===
-                  option.id
-
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  className={[
-                    'match-pairs-card',
-                    'match-pairs-card-right',
-                    isSelectedRight ? 'match-pairs-card-selected' : '',
-                    isBlocked && !isFinished ? 'match-pairs-card-pending' : '',
-                    isFinished && isCorrect
-                      ? 'match-pairs-card-matched'
-                      : '',
-                    isFinished && !isCorrect && selectedPair
-                      ? 'match-pairs-card-wrong'
-                      : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                  onClick={() => handleRightClick(option.id)}
-                  disabled={isBlocked || isFinished}
-                >
-                  <span className="match-pairs-card-label">
-                    {option.label}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
+      <div className="match-pairs-status" aria-live="polite">
+        <span className="match-pairs-stat">
+          <strong>{timeLeft}</strong>
+          <span>сек</span>
+        </span>
+        <span className="match-pairs-stat">
+          <strong>{matchedPairIds.length}</strong>
+          <span>/ {PAIRS_PER_ROUND} пар</span>
+        </span>
       </div>
 
-      {!isAllSelected && (
-        <p className="match-pairs-helper">
-          Сначала выбери элемент из колонки слева, затем кликни по его паре
-          справа. Нужно сопоставить все четыре пары. Результат будет показан после выбора всех пар.
-        </p>
-      )}
-      {isFinished && correctPairs.length === PAIRS.length && (
+      <div className="match-pairs-grid">
+        {cards.map((card, index) => {
+          const isOpen = openedCardIds.includes(card.id)
+          const isMatched = matchedPairIds.includes(card.pairId)
+          const isVisible = isOpen || isMatched
+
+          return (
+            <button
+              key={card.id}
+              type="button"
+              className={[
+                'match-pairs-card',
+                isVisible ? 'match-pairs-card-open' : '',
+                isMatched ? 'match-pairs-card-matched' : '',
+                card.kind === 'problem'
+                  ? 'match-pairs-card-problem'
+                  : 'match-pairs-card-solution',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              onClick={() => handleCardClick(card)}
+              disabled={isFinished || isLocked || isMatched}
+              aria-label={isVisible ? card.label : `Карточка ${index + 1}`}
+            >
+              <span className="match-pairs-card-back">AI</span>
+              <span className="match-pairs-card-face">
+                <span className="match-pairs-card-type">
+                  {card.kind === 'problem' ? 'Проблема' : 'AI-решение'}
+                </span>
+                <span className="match-pairs-card-label">{card.label}</span>
+              </span>
+            </button>
+          )
+        })}
+      </div>
+
+      {result === 'success' && (
         <p className="match-pairs-helper success">
-          Все верно -- ты отлично ориентируесь во вселенной
-          Nestor 😉
+          Все 6 пар найдены до истечения времени.
         </p>
       )}
-      {isFinished && correctPairs.length < PAIRS.length && (
+      {result === 'fail' && (
         <p className="match-pairs-helper fail">
-          Упс, ты тоже запустался во вселенной Nestor? Могу тебя понять 😉
+          Время вышло: найдено {matchedPairIds.length} из {PAIRS_PER_ROUND} пар.
         </p>
       )}
     </div>
@@ -250,4 +320,3 @@ function MatchPairsGame({ onFinish }: MatchPairsGameProps) {
 }
 
 export default MatchPairsGame
-
