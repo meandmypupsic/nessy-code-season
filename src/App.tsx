@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
-import MatchPairsGame from './games/MatchPairsGame'
-import OddOneOutGame from './games/OddOneOutGame'
+import MatchPairsGame from './games/match-pairs/MatchPairsGame'
+import OddOneOutGame from './games/odd-one-out/OddOneOutGame'
 import { POSTCARDS, renderPostcard } from './postcards'
 import nessyNewYearImage from './assets/nessy-new-year.png'
 
