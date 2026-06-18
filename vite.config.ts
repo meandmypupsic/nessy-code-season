@@ -4,6 +4,10 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 const SESSIONS_DIR = 'game-sessions'
+const isDevScript = process.env.npm_lifecycle_event === 'dev'
+const enableRetryControl = isDevScript && process.env.npm_config_r === 'true'
+const enableSkipControl =
+  isDevScript && process.env.npm_config_loglevel === 'silent'
 
 function sanitizeFileName(value: string) {
   return value.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 120)
@@ -21,6 +25,12 @@ async function readJsonBody(request: import('node:http').IncomingMessage) {
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: {
+    'import.meta.env.VITE_ENABLE_GAME_RETRY':
+      JSON.stringify(enableRetryControl),
+    'import.meta.env.VITE_ENABLE_GAME_SKIP':
+      JSON.stringify(enableSkipControl),
+  },
   plugins: [
     react(),
     {

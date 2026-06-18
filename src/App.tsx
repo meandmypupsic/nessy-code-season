@@ -13,6 +13,8 @@ type GameSessionStatus = 'started' | 'in_progress' | 'finished'
 
 const MAX_NAME_LENGTH = 127
 const GAMES_PER_RUN = 5
+const ENABLE_GAME_RETRY = Boolean(import.meta.env.VITE_ENABLE_GAME_RETRY)
+const ENABLE_GAME_SKIP = Boolean(import.meta.env.VITE_ENABLE_GAME_SKIP)
 const NAME_PLACEHOLDERS = [
   "Например, Жаркий вайбкодер",
   "Например, Летний деплойщик",
@@ -573,9 +575,11 @@ function GameLayout({
 
       <footer className="game-footer">
         <div className="buttons-row">
-          <button className="btn secondary" type="button" onClick={onRestart}>
-            Попробовать ещё раз
-          </button>
+          {ENABLE_GAME_RETRY && (
+            <button className="btn secondary" type="button" onClick={onRestart}>
+              Попробовать еще раз
+            </button>
+          )}
           <button
             className="btn primary"
             type="button"
@@ -590,16 +594,18 @@ function GameLayout({
             Заверши мини‑игру, чтобы перейти дальше.
           </p>
         )}
-        <div className="buttons-row" style={{ marginTop: '12px' }}>
-          <button
-            className="btn secondary"
-            type="button"
-            onClick={onSkip}
-            style={{ fontSize: '14px', padding: '8px 16px' }}
-          >
-            Пропустить игру
-          </button>
-        </div>
+        {ENABLE_GAME_SKIP && (
+          <div className="buttons-row" style={{ marginTop: '12px' }}>
+            <button
+              className="btn secondary"
+              type="button"
+              onClick={onSkip}
+              style={{ fontSize: '14px', padding: '8px 16px' }}
+            >
+              Пропустить игру
+            </button>
+          </div>
+        )}
       </footer>
     </div>
   )
