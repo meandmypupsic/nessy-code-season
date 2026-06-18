@@ -723,9 +723,6 @@ function SummaryScreen({
         <p className="summary-text">
           {getSummaryText(successCount, totalPlayed)}
         </p>
-        <p className="summary-text">
-        Не уйти от судьбы — нужен твой ответ в опросе. 5 минут, и ты — герой дня 🌟 Ссылка ждёт тебя <a href="https://polls.tbank.ru/s/cmj1aq4u405pn0eurch4mbavr" target="_blank">тут</a>. Спасибо, ты молодец! 💖
-        </p>
       </div>
 
       {postcardText && (
