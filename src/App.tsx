@@ -3,7 +3,7 @@ import './App.css'
 import ContextSnakeGame from './games/context-snake/ContextSnakeGame'
 import MatchPairsGame from './games/match-pairs/MatchPairsGame'
 import OddOneOutGame from './games/odd-one-out/OddOneOutGame'
-import { POSTCARDS, renderPostcard } from './postcards'
+import { generatePostcard } from './postcardGenerator'
 import nessyNewYearImage from './assets/nessy-new-year.png'
 
 type Screen = 'start' | 'enterName' | 'game' | 'summary'
@@ -387,6 +387,7 @@ function App() {
         {screen === 'summary' && (
           <SummaryScreen
             playerName={playerName}
+            games={gamesForRun}
             results={results}
             onRestart={handleRestart}
           />
@@ -642,14 +643,21 @@ function GameScreen({
 
 type SummaryScreenProps = {
   playerName: string
+  games: GameDefinition[]
   results: GameResult[]
   onRestart: () => void
 }
 
-function SummaryScreen({ playerName, results, onRestart }: SummaryScreenProps) {
+function SummaryScreen({
+  playerName,
+  games,
+  results,
+  onRestart,
+}: SummaryScreenProps) {
   const successCount = results.filter((r) => r === 'success').length
   const totalPlayed = results.length
   const [postcardText, setPostcardText] = useState<string | null>(null)
+  const [isPostcardLoading, setIsPostcardLoading] = useState(false)
 
   const getSummaryText = (successCount: number, totalPlayed: number) => {
     if (totalPlayed === 0) {
@@ -674,11 +682,25 @@ function SummaryScreen({ playerName, results, onRestart }: SummaryScreenProps) {
     }
   }
 
-  const handleGetPostcard = () => {
-    if (POSTCARDS.length === 0) return
-    const randomIndex = Math.floor(Math.random() * POSTCARDS.length)
-    const template = POSTCARDS[randomIndex]
-    setPostcardText(renderPostcard(template.text, playerName))
+  const handleGetPostcard = async () => {
+    if (isPostcardLoading) return
+
+    setIsPostcardLoading(true)
+    try {
+      const generatedText = await generatePostcard({
+        playerName,
+        successCount,
+        totalPlayed,
+        games: games.map((game, index) => ({
+          title: game.title,
+          description: game.description,
+          result: results[index] ?? null,
+        })),
+      })
+      setPostcardText(generatedText)
+    } finally {
+      setIsPostcardLoading(false)
+    }
   }
 
   return (
@@ -729,8 +751,9 @@ function SummaryScreen({ playerName, results, onRestart }: SummaryScreenProps) {
             className="btn primary"
             type="button"
             onClick={handleGetPostcard}
+            disabled={isPostcardLoading}
           >
-            Получить открытку
+            {isPostcardLoading ? 'Генерируем...' : 'Получить открытку'}
           </button>
         )}
       </div>
