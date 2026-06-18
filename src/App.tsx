@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import ContextSnakeGame from './games/context-snake/ContextSnakeGame'
 import MatchPairsGame from './games/match-pairs/MatchPairsGame'
 import OddOneOutGame from './games/odd-one-out/OddOneOutGame'
 import { POSTCARDS, renderPostcard } from './postcards'
@@ -87,6 +88,13 @@ type GameSessionPayload = {
 }
 
 const AVAILABLE_GAMES: GameDefinition[] = [
+  {
+    id: 'context-snake',
+    title: 'Контекстная змейка',
+    description:
+      'Управляй змейкой внутри контекстного окна: собирай MCP, skills, docs и prompt-куски, но не переполни контекст. Нужно продержаться 60 секунд.',
+    render: (onFinish) => <ContextSnakeGame onFinish={onFinish} />,
+  },
   {
     id: 'odd-one-out',
     title: 'Кто лишний?',
