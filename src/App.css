@@ -587,7 +587,8 @@
 
 .summary-text {
   margin: 0;
-  font-size: var(--type-body);
+  font-size: var(--type-body-lg);
+  line-height: 1.5;
   color: var(--color-text-secondary);
 }
 
