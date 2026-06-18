@@ -104,29 +104,6 @@ const AVAILABLE_GAMES: GameDefinition[] = [
       'Ищи лишний пункт в SDLC наборах из четырёх слов. Для победы нужно минимум 5 правильных ответов без ошибок.',
     render: (onFinish) => <OddOneOutGame onFinish={onFinish} />,
   },
-  // {
-  //   id: 'puzzle',
-  //   title: 'Узнай тайну Nestor Agent',
-  //   description:
-  //     'Перед тобой картинка, разделенная на 9 частей. Нажимай по очереди на два блока — они поменяются местами. У тебя есть 30 секунд, чтобы собрать изображение целиком.',
-  //   render: (onFinish) => (
-  //     <PuzzleGame durationSeconds={30} onFinish={onFinish} />
-  //   ),
-  // },
-  // {
-  //   id: 'reaction',
-  //   title: 'Реакция на пост',
-  //   description:
-  //     'Перед тобой пост в канале ~nestor-announcement. Поставь реакцию: только одна из них — «правильная», остальные приведут к провалу.',
-  //   render: (onFinish) => <ReactionGame onFinish={onFinish} />,
-  // },
-  // {
-  //   id: 'crafting',
-  //   title: 'Крафтинг конфигурации Nestor',
-  //   description:
-  //     'У тебя есть набор кубиков — фичи Nestor. Собери такую конфигурацию, которая подойдёт для решения задачи: Создание алгоритма банковского скоринга.',
-  //   render: (onFinish) => <CraftingGame onFinish={onFinish} />,
-  // },
   {
     id: 'match-pairs',
     title: 'Найди пару',
@@ -134,29 +111,6 @@ const AVAILABLE_GAMES: GameDefinition[] = [
       'Открывай по две карточки и сопоставляй оранжевые проблемы в SDLC с синими AI-решениями. За 60 секунд нужно найти 6 пар.',
     render: (onFinish) => <MatchPairsGame onFinish={onFinish} />,
   },
-  // {
-  //   id: 'tap',
-  //   title: 'Тапалка: процент кода',
-  //   description:
-  //     'У тебя появилась возможность натапать свой процент сгенерированного кода.',
-  //   render: (onFinish) => (
-  //     <TapGame durationSeconds={8} onFinish={onFinish} />
-  //   ),
-  // },
-  // {
-  //   id: 'pr-tinder',
-  //   title: 'PR Tinder',
-  //   description:
-  //     'Оценивай diff-карточки с кодом за 60 секунд. Выбери: Approve, Request Changes, Security Risk, Need Tests или Unclear. Нужно успеть оценить 12+ карточек.',
-  //   render: (onFinish) => <PrTinderGame onFinish={onFinish} />,
-  // },
-  // {
-  //   id: 'blast-radius',
-  //   title: 'Blast Radius',
-  //   description:
-  //     'Управляй feature flags как в Flipt. Останови ущерб от бага в проде за 90 секунд: настрой флаги для каждого сегмента пользователей.',
-  //   render: (onFinish) => <BlastRadiusGame onFinish={onFinish} />,
-  // },
 ]
 
 function getRandomGamesForRun() {
