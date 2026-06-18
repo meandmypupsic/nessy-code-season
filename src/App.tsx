@@ -3,6 +3,7 @@ import './App.css'
 import ContextSnakeGame from './games/context-snake/ContextSnakeGame'
 import MatchPairsGame from './games/match-pairs/MatchPairsGame'
 import OddOneOutGame from './games/odd-one-out/OddOneOutGame'
+import PuzzleGame from './games/puzzle/PuzzleGame'
 import { generatePostcard } from './postcardGenerator'
 import nessyNewYearImage from './assets/nessy-new-year.png'
 
@@ -110,6 +111,13 @@ const AVAILABLE_GAMES: GameDefinition[] = [
     description:
       'Открывай по две карточки и сопоставляй оранжевые проблемы в SDLC с синими AI-решениями. За 60 секунд нужно найти 6 пар.',
     render: (onFinish) => <MatchPairsGame onFinish={onFinish} />,
+  },
+  {
+    id: 'puzzle',
+    title: 'Собери пазл',
+    description:
+      'Поменяй местами части изображения так, чтобы собрать картинку. Успей за отведённое время!',
+    render: (onFinish) => <PuzzleGame durationSeconds={60} onFinish={onFinish} />,
   },
 ]
 

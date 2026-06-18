@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import puzzleImage from '../assets/nestor-agent-cline.jpeg'
+import puzzleImage from '../../assets/puzzle.png'
 
 export type PuzzleGameResult = 'success' | 'fail'
 
@@ -149,20 +149,14 @@ function PuzzleGame({ durationSeconds, onFinish }: PuzzleGameProps) {
         ))}
       </div>
 
-      {/* {status === null && (
-        <p className="puzzle-helper">
-          Нажми «Начать», затем по очереди выбирай два блока — они будут
-          меняться местами. Собери картинку до истечения времени.
-        </p>
-      )} */}
       {status === 'success' && (
         <p className="puzzle-helper success">
-          Ты верно собрал картинку! Первого августа 2025 мы опубликовали <a href="https://time.tbank.ru/tinkoff/pl/xim4zr8b7ib7bjr34z3anap8no" target="_blank" rel="noopener noreferrer">пост</a> с анонсом экспериментального Agent Mode в vscode. Для этого мы заинтегрировали плагин CLine.
+          Ты верно собрал картинку! В SDLC, как и в пазле, важно поставить каждый элемент на своё место. Так и рождается чистый код!
         </p>
       )}
       {status === 'fail' && (
         <p className="puzzle-helper fail">
-          Увы, время вышло. Тайна осталась не разгаданной.
+          Увы, время вышло. В SDLC дедлайны тоже не ждут — но это не повод сдаваться.
         </p>
       )}
     </div>
