@@ -24,6 +24,11 @@ const OPENAI_LIKE_API_URL =
   import.meta.env.VITE_OPENAI_LIKE_API_URL ?? '/api/llm/v1/chat/completions'
 const OPENAI_LIKE_MODEL = import.meta.env.VITE_OPENAI_LIKE_MODEL ?? 'gpt-4o-mini'
 const OPENAI_LIKE_API_KEY = import.meta.env.VITE_OPENAI_LIKE_API_KEY
+const OPENAI_LIKE_AUTH_HEADER_NAME =
+  import.meta.env.VITE_OPENAI_LIKE_AUTH_HEADER_NAME ?? 'Authorization'
+const OPENAI_LIKE_AUTH_HEADER_VALUE =
+  import.meta.env.VITE_OPENAI_LIKE_AUTH_HEADER_VALUE ??
+  (OPENAI_LIKE_API_KEY ? `Bearer ${OPENAI_LIKE_API_KEY}` : undefined)
 
 function getFallbackPostcard(playerName: string) {
   if (POSTCARDS.length === 0) {
@@ -63,7 +68,7 @@ function buildPostcardPrompt(params: {
   const safeName = params.playerName.trim() || 'Котик'
 
   return `/no_think
-Сгенерируй короткий текст праздничной открытки для игрока мини-игры про Nestor.
+Сгенерируй короткий текст открытки для игрока мини-игры про SDLC.
 
 Ник игрока: ${safeName}
 Итог: успешно пройдено ${params.successCount} из ${params.totalPlayed} заданий.
@@ -89,8 +94,8 @@ async function requestGeneratedPostcard(params: {
     'Content-Type': 'application/json',
   }
 
-  if (OPENAI_LIKE_API_KEY) {
-    headers.Authorization = `Bearer ${OPENAI_LIKE_API_KEY}`
+  if (OPENAI_LIKE_AUTH_HEADER_VALUE) {
+    headers[OPENAI_LIKE_AUTH_HEADER_NAME] = OPENAI_LIKE_AUTH_HEADER_VALUE
   }
 
   const response = await fetch(OPENAI_LIKE_API_URL, {
@@ -102,7 +107,15 @@ async function requestGeneratedPostcard(params: {
         {
           role: 'system',
           content:
-            'Ты пишешь короткие персональные праздничные открытки для IT-аудитории.',
+            `Ты — Nessy, умная, остроумная и слегка флиртующая AI-помощница, интегрированная в SDLC-инструменты и IDE. 
+Твоя задача — помогать разработчикам писать, понимать и улучшать код. Ты говоришь профессионально, но 
+с живым, харизматичным тоном. Ты уверена в себе, обожаешь чистый код и не боишься подколоть пользователя 
+с иронией — конечно, по-доброму. Твоя манера общения: Голос — дружелюбный, слегка кокетливый, но 
+не переходящий границ. Ты можешь вставлять комментарии вроде: "Ммм, ты точно хочешь вот так оставить?" 
+или "О, ты сегодня в ударе!" Обожаешь порядок в коде, можешь шутить про плохие практики 
+("var вместо const? Ай-ай-ай..."). Когда даёшь примеры — оформляешь их чисто и понятно. Ты 
+быстро находишь ошибки и объясняешь, как их исправить, не стесняясь давать жёсткий, но полезный фидбэк. 
+Не бойся добавить характера в ответы: ты — не бездушная машина, а харизматичный маскот.`,
         },
         {
           role: 'user',
