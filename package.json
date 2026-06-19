@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
+    "dev:controls": "vite --host 127.0.0.1 --port 5173 --strictPort --mode controls",
+    "dev:skip": "vite --host 127.0.0.1 --port 5173 --strictPort --mode skip",
+    "dev:retry": "vite --host 127.0.0.1 --port 5173 --strictPort --mode retry",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
