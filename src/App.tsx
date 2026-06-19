@@ -5,6 +5,7 @@ import MatchPairsGame from './games/match-pairs/MatchPairsGame'
 import OddOneOutGame from './games/odd-one-out/OddOneOutGame'
 import PuzzleGame from './games/puzzle/PuzzleGame'
 import { generatePostcard } from './postcardGenerator'
+import codeSeasonBusImage from './assets/code-season-bus.png'
 import nessyNewYearImage from './assets/nessy-new-year.png'
 
 type Screen = 'start' | 'enterName' | 'game' | 'summary'
@@ -431,15 +432,7 @@ function StartScreen({ onStart }: StartScreenProps) {
           </div>
         </div>
         <div className="festival-road" aria-hidden="true">
-          <div className="festival-van">
-            <div className="van-window van-window-left" />
-            <div className="van-window van-window-mid" />
-            <div className="van-window van-window-front" />
-            <div className="van-wheel van-wheel-left" />
-            <div className="van-wheel van-wheel-right" />
-          </div>
-          <div className="road-line" />
-          <div className="grass-bed" />
+          <img className="festival-bus" src={codeSeasonBusImage} alt="" />
         </div>
       </section>
     </div>

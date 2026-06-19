@@ -333,8 +333,8 @@
 .city-sign {
   position: absolute;
   z-index: 4;
-  left: clamp(28px, 8vw, 150px);
-  top: clamp(245px, 34vh, 330px);
+  left: 0;
+  top: clamp(165px, 24vh, 220px);
   transform: rotate(-2deg);
   width: min(500px, 62vw);
   padding: 22px 28px;
@@ -353,143 +353,16 @@
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: min(1540px, 120vw);
-  height: min(560px, 58vh);
+  width: 100vw;
   transform: translateX(-50%);
   pointer-events: none;
 }
 
-.festival-road::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 132px;
-  height: 118px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0) 24%),
-    var(--color-road);
-  border-top: 6px solid #b8b2a8;
-  border-bottom: 6px solid #b8b2a8;
-  box-shadow: inset 0 -18px 28px rgba(0, 0, 0, 0.34);
-}
-
-.festival-road::after {
-  content: '';
-  position: absolute;
-  right: -28px;
-  bottom: 96px;
-  width: 38%;
-  height: 132px;
-  background:
-    repeating-linear-gradient(90deg, rgba(255, 180, 42, 0.55) 0 8px, transparent 8px 44px),
-    repeating-linear-gradient(0deg, rgba(255, 180, 42, 0.52) 0 8px, transparent 8px 32px),
-    #ffd95d;
-}
-
-.road-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 188px;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.72);
-}
-
-.grass-bed {
-  position: absolute;
-  left: 8%;
-  bottom: 22px;
-  width: 70%;
-  height: 126px;
-  border: 18px solid #846d5d;
-  border-radius: 4px;
-  background:
-    repeating-linear-gradient(105deg, transparent 0 8px, rgba(70, 111, 33, 0.65) 8px 10px),
-    linear-gradient(180deg, #4f762a, #2f5c23);
-  box-shadow: 0 10px 0 rgba(44, 39, 51, 0.12);
-}
-
-.festival-van {
-  position: absolute;
+.festival-bus {
+  display: block;
   z-index: 2;
-  left: 12%;
-  bottom: 150px;
-  width: min(1020px, 76vw);
-  height: min(300px, 25vw);
-  min-height: 178px;
-  border-radius: 70px 130px 36px 36px;
-  background:
-    linear-gradient(180deg, #fbfaf2 0 44%, #efc22f 44% 100%);
-  border: 4px solid rgba(44, 39, 51, 0.18);
-  box-shadow: 0 28px 30px rgba(0, 0, 0, 0.32);
-}
-
-.festival-van::before {
-  content: '';
-  position: absolute;
-  right: -18px;
-  bottom: 54px;
-  width: 34px;
-  height: 62px;
-  border-radius: 0 18px 18px 0;
-  background: #f2763a;
-}
-
-.festival-van::after {
-  content: '';
-  position: absolute;
-  left: 44px;
-  top: 92px;
-  width: 58px;
-  height: 76px;
-  border-radius: 4px;
-  background: repeating-linear-gradient(180deg, #2c2733 0 7px, transparent 7px 16px);
-}
-
-.van-window {
-  position: absolute;
-  top: 70px;
-  height: 78px;
-  border: 5px solid #2c2733;
-  border-radius: 10px;
-  background: linear-gradient(145deg, #d9dbd8, #f5f6f2);
-  box-shadow: inset 18px 0 22px rgba(255, 255, 255, 0.58);
-}
-
-.van-window-left {
-  left: 150px;
-  width: 27%;
-}
-
-.van-window-mid {
-  left: 48%;
-  width: 26%;
-  transform: translateX(-50%);
-}
-
-.van-window-front {
-  right: 82px;
-  width: 19%;
-  border-radius: 8px 44px 10px 8px;
-}
-
-.van-wheel {
-  position: absolute;
-  bottom: -48px;
-  width: 118px;
-  height: 118px;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle, #cfc9b7 0 28%, #2c2733 29% 52%, #f4f4ef 53% 70%, #2c2733 71%);
-}
-
-.van-wheel-left {
-  left: 19%;
-}
-
-.van-wheel-right {
-  right: 16%;
+  width: 100%;
+  height: auto;
 }
 
 .route-ribbon {
@@ -1943,14 +1816,13 @@
     font-size: var(--type-title-lg);
   }
 
-  .festival-van {
-    left: 4%;
-    width: 92vw;
+  .festival-bus {
+    width: 100%;
   }
 
   .city-sign {
-    top: 310px;
-    left: 8vw;
+    top: 220px;
+    left: 0;
     width: min(480px, 76vw);
     font-size: var(--type-title-lg);
   }
@@ -1968,7 +1840,8 @@
   .city-sign {
     width: 82vw;
     padding: 16px;
-    top: 305px;
+    top: 225px;
+    left: 0;
     font-size: var(--type-title-md);
   }
 
@@ -1981,33 +1854,12 @@
   }
 
   .festival-road {
-    width: 150vw;
+    width: 100vw;
     bottom: 0;
   }
 
-  .festival-van {
-    height: 178px;
-    bottom: 156px;
-  }
-
-  .van-window {
-    top: 48px;
-    height: 50px;
-    border-width: 3px;
-  }
-
-  .van-window-left {
-    left: 90px;
-  }
-
-  .van-window-front {
-    right: 48px;
-  }
-
-  .van-wheel {
-    width: 78px;
-    height: 78px;
-    bottom: -32px;
+  .festival-bus {
+    width: 100%;
   }
 
   .game-content {
