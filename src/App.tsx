@@ -728,7 +728,7 @@ function SummaryScreen({
 
       {postcardText && (
         <div className="summary-card postcard-card">
-          <h3 className="postcard-title">Твоя новогодняя открытка от Nessy</h3>
+          <h3 className="postcard-title">Твоя открытка от Nessy</h3>
           <div className="postcard-body">
             <img
               src={nessyNewYearImage}
