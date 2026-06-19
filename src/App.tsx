@@ -6,7 +6,7 @@ import OddOneOutGame from './games/odd-one-out/OddOneOutGame'
 import PuzzleGame from './games/puzzle/PuzzleGame'
 import { generatePostcard } from './postcardGenerator'
 import codeSeasonBusImage from './assets/code-season-bus.png'
-import nessyNewYearImage from './assets/nessy-new-year.png'
+import nessySummerImage from './assets/nessy-summer.png'
 
 type Screen = 'start' | 'enterName' | 'game' | 'summary'
 type GameResult = 'success' | 'fail' | null
@@ -731,8 +731,8 @@ function SummaryScreen({
           <h3 className="postcard-title">Твоя открытка от Nessy</h3>
           <div className="postcard-body">
             <img
-              src={nessyNewYearImage}
-              alt="Новогодняя открытка от Nessy"
+              src={nessySummerImage}
+              alt="Летняя открытка от Nessy"
               className="postcard-image"
             />
             <p className="postcard-text">{postcardText}</p>
