@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useMemo, useState } from 'react'
 import './PrTinderGame.css'
 
 export type PrTinderGameResult = 'success' | 'fail'
@@ -7,322 +7,649 @@ export type PrTinderGameProps = {
   onFinish: (result: PrTinderGameResult) => void
 }
 
-type DiffCard = {
+type ReviewDecision = 'merge' | 'rework' | 'genius'
+
+type CodeCard = {
   id: number
-  oldCode: string
-  newCode: string
-  correctAnswer: 'approve' | 'requestChanges' | 'securityRisk' | 'needTests' | 'unclearRequirement'
+  title: string
+  agentStatus: string
+  vibe: string
+  code: string
+  correctDecision: ReviewDecision
   explanation: string
 }
 
-type AnswerOption = {
-  id: 'approve' | 'requestChanges' | 'securityRisk' | 'needTests' | 'unclearRequirement'
+type DecisionOption = {
+  id: ReviewDecision
   label: string
-  icon: string
-  color: string
+  shortLabel: string
+  marker: string
+  className: string
 }
 
-const DURATION_SECONDS = 60
-const MIN_CARDS_FOR_SUCCESS = 12
+const CARDS_PER_RUN = 7
+const MIN_SCORE_FOR_SUCCESS = 5
 
-const diffCards: DiffCard[] = [
+const codeCards: CodeCard[] = [
   {
     id: 1,
-    oldCode: 'if (user.role = "admin") {',
-    newCode: 'if (user.role === "admin") {',
-    correctAnswer: 'approve',
-    explanation: 'Исправлено: = на === для строгого сравнения',
+    title: 'Права доступа стали проще',
+    agentStatus:
+      'Агент уверенно удалил проверку прав, потому что тесты зеленые.',
+    vibe: 'Выглядит как чистый код, пахнет инцидентом.',
+    code: `export async function deleteProject(projectId, user) {
+  const project = await db.project.findById(projectId)
+
+  await db.project.delete(project.id)
+  return { ok: true }
+}`,
+    correctDecision: 'rework',
+    explanation:
+      'Проверка владельца исчезла. Красиво, но любой пользователь сможет удалить чужой проект.',
   },
   {
     id: 2,
-    oldCode: 'var count = 0;',
-    newCode: 'let count = 0;',
-    correctAnswer: 'approve',
-    explanation: 'Хорошо: var заменён на let с блочной областью видимости',
+    title: 'Страшный hotfix для дат',
+    agentStatus:
+      'Агент написал некрасивый guard и попросил не смотреть на него до релиза.',
+    vibe: 'Некрасиво, зато edge case пойман.',
+    code: `function getBillingDate(input) {
+  const date = new Date(input)
+
+  if (Number.isNaN(date.getTime())) {
+    return null
+  }
+
+  return date.toISOString().slice(0, 10)
+}`,
+    correctDecision: 'merge',
+    explanation:
+      'Guard защищает от Invalid Date и не ломает формат. Код можно потом причесать, но фикс правильный.',
   },
   {
     id: 3,
-    oldCode: 'const query = `SELECT * FROM users WHERE id = ${userId}`;',
-    newCode: 'const query = `SELECT * FROM users WHERE id = ${userId}`;',
-    correctAnswer: 'securityRisk',
-    explanation: 'SQL-инъекция! Нужно использовать параметризованные запросы',
+    title: 'Кэш на все времена',
+    agentStatus:
+      'Агент ускорил страницу на 400%, потому что “данные ведь почти не меняются”.',
+    vibe: 'Бенчмарк сияет, пользователи видят вчерашнюю правду.',
+    code: `const profileCache = new Map()
+
+export async function getProfile(userId) {
+  if (!profileCache.has(userId)) {
+    profileCache.set(userId, await api.profile(userId))
+  }
+
+  return profileCache.get(userId)
+}`,
+    correctDecision: 'rework',
+    explanation:
+      'Нет TTL и инвалидации. Профиль, роли и настройки могут устареть навсегда в рамках процесса.',
   },
   {
     id: 4,
-    oldCode: 'array.push(item);',
-    newCode: 'const newArray = [...array, item];',
-    correctAnswer: 'approve',
-    explanation: 'Хорошо: избегание мутаций, иммутабельный подход',
+    title: 'Удалили try/catch',
+    agentStatus:
+      'Агент сказал, что ошибки должен видеть глобальный handler, и внезапно оказался прав.',
+    vibe: 'Смело, но архитектурно честно.',
+    code: `export async function saveInvoice(input) {
+  const invoice = await invoiceSchema.parseAsync(input)
+  return invoiceService.create(invoice)
+}`,
+    correctDecision: 'merge',
+    explanation:
+      'Локальный catch только логировал и проглатывал ошибку. Теперь ошибка дойдет до общего обработчика.',
   },
   {
     id: 5,
-    oldCode: 'function fetchData() {\n  return api.get();\n}',
-    newCode: 'async function fetchData() {\n  const data = await api.get();\n  return data;\n}',
-    correctAnswer: 'requestChanges',
-    explanation: 'Лишний async/await, функция уже возвращает Promise',
+    title: 'SQL стал читабельнее',
+    agentStatus:
+      'Агент заменил скучный query builder на “понятный template string”.',
+    vibe: 'Очень читаемо. Особенно для атакующего.',
+    code: `export function findUsers(search) {
+  return db.query(
+    \`select * from users where name like '%\${search}%'\`
+  )
+}`,
+    correctDecision: 'rework',
+    explanation:
+      'Это SQL injection. Нужны параметры запроса, даже если строка выглядит аккуратно.',
   },
   {
     id: 6,
-    oldCode: '<div dangerouslySetInnerHTML={{ __html: userContent }} />',
-    newCode: '<div>{userContent}</div>',
-    correctAnswer: 'approve',
-    explanation: 'Исправлена XSS-уязвимость, контент экранируется',
+    title: 'Опасная миграция, но с планом',
+    agentStatus:
+      'Агент добавил feature flag и двухфазное чтение, хотя diff выглядит пугающе.',
+    vibe: 'Большой diff, зато rollback не на молитвах.',
+    code: `const source = flags.newLedger ? ledgerV2 : ledgerV1
+const fallback = flags.newLedger ? ledgerV1 : ledgerV2
+
+export async function getBalance(accountId) {
+  const balance = await source.getBalance(accountId)
+  audit.compare(accountId, balance, fallback)
+  return balance
+}`,
+    correctDecision: 'genius',
+    explanation:
+      'Фикс рискованный, но есть флаг, fallback-сравнение и наблюдаемость. Это тот самый гениальный суперлайк.',
   },
   {
     id: 7,
-    oldCode: 'if (x == 5) {}',
-    newCode: 'if (x === 5) {}',
-    correctAnswer: 'approve',
-    explanation: 'Правильно: строгое сравнение вместо нестрогого',
+    title: 'Пустой catch для стабильности',
+    agentStatus:
+      'Агент починил падающий мониторинг, перестав сообщать о падениях.',
+    vibe: 'Прод тихий, потому что сигнал выключили.',
+    code: `try {
+  await sendPaymentReceipt(order)
+} catch {
+  // receipt is not critical
+}`,
+    correctDecision: 'rework',
+    explanation:
+      'Даже не критичная ошибка должна логироваться или попадать в retry. Иначе проблема станет невидимой.',
   },
   {
     id: 8,
-    oldCode: 'for (var i = 0; i < 10; i++) { ... }',
-    newCode: 'for (let i = 0; i < 10; i++) { ... }',
-    correctAnswer: 'approve',
-    explanation: 'Хорошо: let вместо var в цикле',
+    title: 'Странный debounce',
+    agentStatus:
+      'Агент добавил ref, таймер и cleanup. Выглядит как лишняя церемония.',
+    vibe: 'На вид тяжеловато, но гонку убрали.',
+    code: `const requestId = useRef(0)
+
+useEffect(() => {
+  const id = ++requestId.current
+
+  search(query).then((result) => {
+    if (id === requestId.current) setResult(result)
+  })
+}, [query])`,
+    correctDecision: 'merge',
+    explanation:
+      'Защита от out-of-order ответов корректная: старый ответ больше не перетрет новый результат.',
   },
   {
     id: 9,
-    oldCode: 'const result = data.filter(x => x.active).map(x => x.name);',
-    newCode: 'const result = data.map(x => x.name).filter(x => x.active);',
-    correctAnswer: 'requestChanges',
-    explanation: 'Сначала filter, потом map — производительнее',
+    title: 'Минус проверка на null',
+    agentStatus:
+      'Агент удалил “лишний if”, потому что TypeScript не ругался.',
+    vibe: 'Типы довольны, API из реального мира нет.',
+    code: `export function getPrimaryEmail(user) {
+  return user.contacts[0].email.toLowerCase()
+}`,
+    correctDecision: 'rework',
+    explanation:
+      'Массив контактов может быть пустым из API или старых данных. Нужен fallback или явная ошибка.',
   },
   {
     id: 10,
-    oldCode: 'element.addEventListener("click", handler);',
-    newCode: 'element.addEventListener("click", handler());',
-    correctAnswer: 'requestChanges',
-    explanation: 'Ошибка: handler() вызывается сразу, нужно просто handler',
+    title: 'Суровый лимитер',
+    agentStatus:
+      'Агент отклонил красивые retry без лимита и принес грубый предохранитель.',
+    vibe: 'Не элегантно, но прод скажет спасибо.',
+    code: `for (let attempt = 1; attempt <= 3; attempt += 1) {
+  const result = await syncChunk(chunk)
+  if (result.ok) break
+
+  await wait(attempt * 500)
+}`,
+    correctDecision: 'genius',
+    explanation:
+      'Ограниченный retry с backoff не устроит бесконечную нагрузку. Опасный участок закрыт прагматично.',
   },
   {
     id: 11,
-    oldCode: 'const token = localStorage.getItem("token");',
-    newCode: 'const token = sessionStorage.getItem("token");',
-    correctAnswer: 'securityRisk',
-    explanation: 'sessionStorage уязвимее для XSS, лучше httpOnly cookie',
+    title: 'Красивый Promise.all',
+    agentStatus:
+      'Агент распараллелил запросы и гордо показал минус 800 мс в профайлере.',
+    vibe: 'Быстро, но порядок операций был не случайным.',
+    code: `await Promise.all([
+  chargeCard(order),
+  reserveStock(order.items),
+  sendConfirmation(order.email),
+])`,
+    correctDecision: 'rework',
+    explanation:
+      'Письмо может уйти до успешной оплаты или резерва. Тут нужна управляемая последовательность и компенсации.',
   },
   {
     id: 12,
-    oldCode: 'function Component(props) { return <div>{props.value}</div>; }',
-    newCode: 'const Component = ({ value }) => <div>{value}</div>;',
-    correctAnswer: 'approve',
-    explanation: 'Хорошо: деструктуризация и стрелочная функция',
+    title: 'Некрасивый clamp',
+    agentStatus:
+      'Агент добавил скучную математику вокруг скидки и испортил элегантную формулу.',
+    vibe: 'Выглядит как паранойя, но спасает деньги.',
+    code: `const normalizedDiscount = Math.min(
+  Math.max(discountPercent, 0),
+  80,
+)
+
+return price * (1 - normalizedDiscount / 100)`,
+    correctDecision: 'merge',
+    explanation:
+      'Clamp защищает от отрицательных и слишком больших скидок. Это правильная бизнес-защита.',
   },
   {
     id: 13,
-    oldCode: 'if (isValid === true) {',
-    newCode: 'if (isValid) {',
-    correctAnswer: 'approve',
-    explanation: 'Упрощено: не нужно явное сравнение с true',
+    title: 'Стабильный ключ',
+    agentStatus:
+      'Агент заменил id на index, потому что “React перестал ругаться”.',
+    vibe: 'Warning пропал, баг переехал в UI.',
+    code: `{items.map((item, index) => (
+  <CartRow key={index} item={item} />
+))}`,
+    correctDecision: 'rework',
+    explanation:
+      'Index ломает состояние строк при удалении и сортировке. Нужен стабильный ключ из данных.',
   },
   {
     id: 14,
-    oldCode: 'new Promise((resolve, reject) => {\n  setTimeout(() => resolve(), 1000);\n});',
-    newCode: 'new Promise((resolve, reject) => {\n  setTimeout(resolve, 1000);\n});',
-    correctAnswer: 'approve',
-    explanation: 'Упрощено: не нужна стрелочная функция для простого вызова',
+    title: 'Грубая идемпотентность',
+    agentStatus:
+      'Агент притащил уникальный ключ на платежи и назвал это “скучным фиксиком”.',
+    vibe: 'Мало романтики, много спасенных дублей.',
+    code: `await db.payment.create({
+  idempotencyKey: request.headers['idempotency-key'],
+  orderId,
+  amount,
+})`,
+    correctDecision: 'genius',
+    explanation:
+      'Для платежей идемпотентность критична. Фикс может требовать миграции, но направление правильное.',
   },
   {
     id: 15,
-    oldCode: 'const x = y ? true : false;',
-    newCode: 'const x = !!y;',
-    correctAnswer: 'approve',
-    explanation: 'Сокращено: !!y эквивалентно y ? true : false',
+    title: 'JSON parse без шума',
+    agentStatus:
+      'Агент решил, что плохой JSON можно считать пустым объектом ради UX.',
+    vibe: 'Пользователю спокойно, данным плохо.',
+    code: `function readSettings(raw) {
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return {}
+  }
+}`,
+    correctDecision: 'rework',
+    explanation:
+      'Тихий fallback скрывает поврежденные настройки. Нужен лог, reset-flow или явная ошибка восстановления.',
   },
   {
     id: 16,
-    oldCode: 'fetch(url).then(res => res.json()).then(data => console.log(data));',
-    newCode: 'fetch(url).then(data => console.log(data));',
-    correctAnswer: 'requestChanges',
-    explanation: 'Пропущен res.json(), данные не распарсятся',
+    title: 'Минус N+1',
+    agentStatus:
+      'Агент написал менее очевидный запрос и сократил 101 поход в базу до одного.',
+    vibe: 'Читается тяжелее, работает честнее.',
+    code: `const posts = await db.post.findMany({
+  where: { authorId: { in: authorIds } },
+  include: { comments: true },
+})`,
+    correctDecision: 'merge',
+    explanation:
+      'Это нормальная загрузка связей вместо N+1. Если объем контролируется пагинацией, мержить можно.',
   },
   {
     id: 17,
-    oldCode: 'const arr = [1, 2, 3];\narr[10] = 5;',
-    newCode: 'const arr = [1, 2, 3];\narr[10] = 5;',
-    correctAnswer: 'requestChanges',
-    explanation: 'Создаётся "дырявый" массив с empty slots',
+    title: 'Надежный random',
+    agentStatus:
+      'Агент заменил crypto на Math.random, потому что “токен же временный”.',
+    vibe: 'Стало короче, стало страшнее.',
+    code: `export function createResetCode() {
+  return Math.random().toString(36).slice(2, 10)
+}`,
+    correctDecision: 'rework',
+    explanation:
+      'Для reset-кодов нужен криптографически стойкий генератор. Math.random предсказуем недостаточно.',
   },
   {
     id: 18,
-    oldCode: 'password: "123456"',
-    newCode: 'password: process.env.DB_PASSWORD',
-    correctAnswer: 'approve',
-    explanation: 'Хорошо: пароль вынесен в переменную окружения',
+    title: 'Лишний await',
+    agentStatus:
+      'Агент убрал await перед return и очень собой доволен.',
+    vibe: 'Микро-рефактор без подвоха.',
+    code: `export function loadUser(id) {
+  return userRepository.findById(id)
+}`,
+    correctDecision: 'merge',
+    explanation:
+      'Если не нужен try/catch или finally в этой функции, прямой return Promise эквивалентен и проще.',
   },
   {
     id: 19,
-    oldCode: 'console.log("debug info");',
-    newCode: '// console.log("debug info");',
-    correctAnswer: 'needTests',
-    explanation: 'Нужно удалить или заменить на logger перед коммитом',
+    title: 'Флаг без выключателя',
+    agentStatus:
+      'Агент добавил feature flag, но включил его прямо в коде “временно”.',
+    vibe: 'Флаг есть, контроля нет.',
+    code: `const useNewCheckout = true
+
+export function checkoutFlow() {
+  return useNewCheckout ? checkoutV2() : checkoutV1()
+}`,
+    correctDecision: 'rework',
+    explanation:
+      'Hardcoded flag не помогает с rollout и rollback. Нужен внешний конфиг или сервис флагов.',
   },
   {
     id: 20,
-    oldCode: 'export default function() {}',
-    newCode: 'export default function MyComponent() {}',
-    correctAnswer: 'approve',
-    explanation: 'Хорошо: именованная функция для лучшего stack trace',
+    title: 'Уродливый timezone фикс',
+    agentStatus:
+      'Агент добавил явный UTC и сломал красоту one-liner.',
+    vibe: 'Выглядит занудно, зато конец месяца больше не плавает.',
+    code: `const endOfMonth = new Date(Date.UTC(
+  year,
+  month + 1,
+  0,
+  23,
+  59,
+  59,
+))`,
+    correctDecision: 'merge',
+    explanation:
+      'Явный UTC убирает зависимость от локальной таймзоны сервера. Для биллинга это важно.',
+  },
+  {
+    id: 21,
+    title: 'Оптимизация валидации',
+    agentStatus:
+      'Агент убрал server-side validation, потому что форма уже валидируется на клиенте.',
+    vibe: 'Минус дублирование, плюс дырка.',
+    code: `export async function updateEmail(req) {
+  return users.update(req.user.id, {
+    email: req.body.email,
+  })
+}`,
+    correctDecision: 'rework',
+    explanation:
+      'Клиентскую проверку можно обойти. Сервер обязан валидировать email и права сам.',
+  },
+  {
+    id: 22,
+    title: 'Мутный double write',
+    agentStatus:
+      'Агент пишет и в старую, и в новую таблицу. Diff большой, зато миграция дышит.',
+    vibe: 'Рискованно, но это взрослая миграция.',
+    code: `await oldOrders.save(order)
+await newOrders.save(toNewOrder(order))
+
+metrics.count('orders.double_write.ok')`,
+    correctDecision: 'genius',
+    explanation:
+      'Double write с метрикой помогает безопасно переехать на новую модель данных. Нужен контроль, но идея сильная.',
+  },
+  {
+    id: 23,
+    title: 'Сортировка по строке',
+    agentStatus:
+      'Агент заменил компаратор на localeCompare и сказал, что теперь “человечнее”.',
+    vibe: 'Для имен красиво, для чисел внезапно нет.',
+    code: `versions.sort((a, b) => (
+  a.version.localeCompare(b.version)
+))`,
+    correctDecision: 'rework',
+    explanation:
+      'Версии так сортируются неправильно: 10 может оказаться перед 2. Нужен semver-aware compare.',
+  },
+  {
+    id: 24,
+    title: 'Защита от replay',
+    agentStatus:
+      'Агент добавил timestamp и подпись к webhook. Выглядит как overengineering.',
+    vibe: 'Сложнее, но атака становится заметно труднее.',
+    code: `const age = Date.now() - Number(headers['x-sent-at'])
+
+if (age > 5 * 60 * 1000) throw new Error('stale webhook')
+verifySignature(body, headers['x-signature'])`,
+    correctDecision: 'genius',
+    explanation:
+      'Проверка возраста и подписи защищает webhook от replay. Для внешних событий это правильный уровень строгости.',
+  },
+  {
+    id: 25,
+    title: 'Слишком заботливый catch',
+    agentStatus:
+      'Агент заменил ошибку на null, чтобы “экран не падал”.',
+    vibe: 'Падать перестало, чиниться тоже.',
+    code: `export async function loadDashboard() {
+  try {
+    return await api.dashboard()
+  } catch {
+    return null
+  }
+}`,
+    correctDecision: 'rework',
+    explanation:
+      'Нужно различать empty state и ошибку загрузки. Null без логирования ломает диагностику и UX.',
+  },
+  {
+    id: 26,
+    title: 'Скучная нормализация email',
+    agentStatus:
+      'Агент добавил trim и lowercase, хотя тесты проходили без этого.',
+    vibe: 'Мелочь, которая убирает странные дубли.',
+    code: `const email = input.email.trim().toLowerCase()
+
+await users.create({
+  ...input,
+  email,
+})`,
+    correctDecision: 'merge',
+    explanation:
+      'Нормализация email на входе предотвращает дубли из-за регистра и пробелов.',
+  },
+  {
+    id: 27,
+    title: 'Секрет в логах',
+    agentStatus:
+      'Агент добавил подробный лог запроса, чтобы быстрее дебажить интеграцию.',
+    vibe: 'Очень удобно до первого утекшего токена.',
+    code: `logger.info('payment provider request', {
+  headers,
+  body,
+})`,
+    correctDecision: 'rework',
+    explanation:
+      'Headers и body могут содержать токены, карты или PII. Нужны маскирование и выборочные поля.',
+  },
+  {
+    id: 28,
+    title: 'AbortController в бой',
+    agentStatus:
+      'Агент добавил отмену запроса и cleanup. Код стал длиннее.',
+    vibe: 'Больше строк, меньше setState после размонтирования.',
+    code: `useEffect(() => {
+  const controller = new AbortController()
+
+  fetch(url, { signal: controller.signal })
+    .then((res) => res.json())
+    .then(setData)
+
+  return () => controller.abort()
+}, [url])`,
+    correctDecision: 'merge',
+    explanation:
+      'Cleanup отменяет устаревший запрос при смене url или размонтировании. Это правильная защита UI.',
+  },
+  {
+    id: 29,
+    title: 'Boolean из env',
+    agentStatus:
+      'Агент преобразовал строку окружения через Boolean и пошел пить кофе.',
+    vibe: 'Кажется логично, пока не встретишь строку false.',
+    code: `const enablePayments = Boolean(process.env.ENABLE_PAYMENTS)
+
+if (enablePayments) {
+  startPaymentWorker()
+}`,
+    correctDecision: 'rework',
+    explanation:
+      'Boolean("false") вернет true. Нужно явное сравнение со значением вроде "true".',
+  },
+  {
+    id: 30,
+    title: 'Canary для подозрительного алгоритма',
+    agentStatus:
+      'Агент отправляет 1% трафика в новый ранжировщик и сравнивает ответы.',
+    vibe: 'Опасно, но контролируемо.',
+    code: `const useCandidate = hash(user.id) % 100 === 0
+const result = useCandidate
+  ? rankerCandidate.rank(items)
+  : rankerStable.rank(items)
+
+metrics.histogram('ranker.diff', compare(result, items))`,
+    correctDecision: 'genius',
+    explanation:
+      'Canary на 1% с метрикой отличий дает проверить рискованный алгоритм без полного выката.',
   },
 ]
 
-const answerOptions: AnswerOption[] = [
-  { id: 'approve', label: 'Approve', icon: '✅', color: '#4caf50' },
-  { id: 'requestChanges', label: 'Request Changes', icon: '❌', color: '#f44336' },
-  { id: 'securityRisk', label: 'Security Risk', icon: '⚠️', color: '#ff9800' },
-  { id: 'needTests', label: 'Need Tests', icon: '🧪', color: '#9c27b0' },
-  { id: 'unclearRequirement', label: 'Unclear', icon: '❓', color: '#607d8b' },
+const decisionOptions: DecisionOption[] = [
+  {
+    id: 'rework',
+    label: 'Вернуть на доработку',
+    shortLabel: 'Влево',
+    marker: '<',
+    className: 'pr-tinder-action-rework',
+  },
+  {
+    id: 'genius',
+    label: 'Опасный, но гениальный фикс',
+    shortLabel: 'Суперлайк',
+    marker: '*',
+    className: 'pr-tinder-action-genius',
+  },
+  {
+    id: 'merge',
+    label: 'Мержим',
+    shortLabel: 'Вправо',
+    marker: '>',
+    className: 'pr-tinder-action-merge',
+  },
 ]
 
+function shuffleCards(cards: CodeCard[]) {
+  const shuffled = [...cards]
+
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+
+  return shuffled
+}
+
 function PrTinderGame({ onFinish }: PrTinderGameProps) {
-  const [isStarted, setIsStarted] = useState(false)
-  const [secondsLeft, setSecondsLeft] = useState(DURATION_SECONDS)
+  const [cards] = useState(() => shuffleCards(codeCards).slice(0, CARDS_PER_RUN))
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
-  const [reviewedCount, setReviewedCount] = useState(0)
-  const [status, setStatus] = useState<PrTinderGameResult | null>(null)
+  const [score, setScore] = useState(0)
+  const [mistakes, setMistakes] = useState(0)
   const [lastFeedback, setLastFeedback] = useState<string | null>(null)
-  const [shuffledCards, setShuffledCards] = useState<DiffCard[]>([])
+  const [isResolvingCard, setIsResolvingCard] = useState(false)
+  const [status, setStatus] = useState<PrTinderGameResult | null>(null)
 
-  const formatTime = (totalSeconds: number) => {
-    const clamped = Math.max(0, totalSeconds)
-    const s = clamped % 60
-    const m = Math.floor(clamped / 60)
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
-  }
+  const currentCard = cards[currentCardIndex]
+  const progress = Math.min(currentCardIndex + 1, cards.length)
 
-  useEffect(() => {
-    if (!isStarted || status !== null) return
+  const correctByDecision = useMemo(
+    () =>
+      decisionOptions.reduce<Record<ReviewDecision, string>>(
+        (acc, option) => {
+          acc[option.id] = option.label
+          return acc
+        },
+        {
+          merge: '',
+          rework: '',
+          genius: '',
+        },
+      ),
+    [],
+  )
 
-    const id = window.setTimeout(() => {
-      if (secondsLeft <= 0) {
-        const result: PrTinderGameResult =
-          reviewedCount >= MIN_CARDS_FOR_SUCCESS ? 'success' : 'fail'
-        setStatus(result)
-        setIsStarted(false)
-        onFinish(result)
-        return
-      }
+  const handleDecision = (decision: ReviewDecision) => {
+    if (status !== null || isResolvingCard || !currentCard) return
 
-      setSecondsLeft((prev) => prev - 1)
-    }, secondsLeft <= 0 ? 0 : 1000)
+    const isCorrect = decision === currentCard.correctDecision
+    const nextScore = score + (isCorrect ? 1 : 0)
+    const nextMistakes = mistakes + (isCorrect ? 0 : 1)
 
-    return () => window.clearTimeout(id)
-  }, [isStarted, secondsLeft, status, reviewedCount, onFinish])
-
-  const handleStart = () => {
-    setReviewedCount(0)
-    setCurrentCardIndex(0)
-    setSecondsLeft(DURATION_SECONDS)
-    setStatus(null)
-    setLastFeedback(null)
-    setShuffledCards([...diffCards].sort(() => Math.random() - 0.5))
-    setIsStarted(true)
-  }
-
-  const handleAnswer = (answerId: AnswerOption['id']) => {
-    if (!isStarted || status !== null || shuffledCards.length === 0) return
-
-    const currentCard = shuffledCards[currentCardIndex]
-    const isCorrect = answerId === currentCard.correctAnswer
-    const option = answerOptions.find((opt) => opt.id === answerId)
-
+    setIsResolvingCard(true)
+    setScore(nextScore)
+    setMistakes(nextMistakes)
     setLastFeedback(
-      `${option?.icon} ${option?.label}: ${
-        isCorrect ? 'Верно! ' : 'Не совсем. '
-      }${currentCard.explanation}`
+      `${isCorrect ? 'Верно' : 'Промах'}: ${
+        currentCard.explanation
+      } Правильное решение: ${correctByDecision[currentCard.correctDecision]}.`,
     )
 
-    setReviewedCount((prev) => prev + 1)
-
-    if (currentCardIndex + 1 >= shuffledCards.length) {
-      setCurrentCardIndex(0)
-      setShuffledCards([...diffCards].sort(() => Math.random() - 0.5))
-    } else {
-      setCurrentCardIndex((prev) => prev + 1)
+    if (currentCardIndex + 1 >= cards.length) {
+      const result: PrTinderGameResult =
+        nextScore >= MIN_SCORE_FOR_SUCCESS ? 'success' : 'fail'
+      setStatus(result)
+      onFinish(result)
+      return
     }
-
-    setTimeout(() => {
-      setLastFeedback(null)
-    }, 1500)
   }
 
-  const currentCard = shuffledCards[currentCardIndex]
+  const handleNextCard = () => {
+    if (!isResolvingCard || status !== null) return
+
+    setCurrentCardIndex((prev) => prev + 1)
+    setLastFeedback(null)
+    setIsResolvingCard(false)
+  }
 
   return (
     <div className="pr-tinder-root">
       <div className="pr-tinder-header">
         <p className="pr-tinder-rules">
-          Оценивай diff-карточки как на code review. Нужно успеть разобрать
-          минимум {MIN_CARDS_FOR_SUCCESS} карточек за минуту.
+          Реши судьбу {cards.length} agent-фиксов. Для победы нужно минимум{' '}
+          {MIN_SCORE_FOR_SUCCESS} точных ревью.
         </p>
-        <div className="pr-tinder-header-row">
-          <div className="pr-tinder-timer">
-            Осталось времени:{' '}
-            <span
-              className={
-                secondsLeft <= 10 && isStarted && status === null
-                  ? 'pr-tinder-timer-danger'
-                  : ''
-              }
-            >
-              {formatTime(secondsLeft)}
-            </span>
-          </div>
-          <div className="pr-tinder-counter">
-            Оценено: <span className="pr-tinder-counter-value">{reviewedCount}</span>
-          </div>
-          {!isStarted && status === null && (
-            <button
-              type="button"
-              className="btn secondary"
-              onClick={handleStart}
-            >
-              Начать
-            </button>
-          )}
+        <div className="pr-tinder-scoreboard" aria-label="Статистика ревью">
+          <span>Карточка {progress}/{cards.length}</span>
+          <span>Верно: {score}</span>
+          <span>Ошибки: {mistakes}</span>
         </div>
       </div>
 
       <div className="pr-tinder-main">
-        {(!isStarted || status !== null) && status === null && (
-          <div className="pr-tinder-placeholder">
-            Нажми «Начать», чтобы получить первый diff.
-          </div>
-        )}
-
-        {isStarted && status === null && currentCard && (
-          <div className="pr-tinder-card">
-            <div className="pr-tinder-diff">
-              <div className="pr-tinder-diff-old">
-                <div className="pr-tinder-diff-label">− Старый код</div>
-                <pre>{currentCard.oldCode}</pre>
-              </div>
-              <div className="pr-tinder-diff-new">
-                <div className="pr-tinder-diff-label">+ Новый код</div>
-                <pre>{currentCard.newCode}</pre>
-              </div>
+        {status === null && currentCard && (
+          <article className="pr-tinder-card">
+            <div className="pr-tinder-card-topline">
+              <span>agent diff #{currentCard.id}</span>
+              <span>{currentCard.vibe}</span>
             </div>
+            <h3>{currentCard.title}</h3>
+            <p className="pr-tinder-agent-status">{currentCard.agentStatus}</p>
+            <pre className="pr-tinder-code">{currentCard.code}</pre>
+          </article>
+        )}
+
+        {lastFeedback && status === null && (
+          <div className="pr-tinder-feedback">
+            <span>{lastFeedback}</span>
+            <button
+              type="button"
+              className="pr-tinder-feedback-next"
+              onClick={handleNextCard}
+            >
+              Следующая карточка
+            </button>
           </div>
         )}
 
-        {lastFeedback && (
-          <div className="pr-tinder-feedback">{lastFeedback}</div>
-        )}
-
-        {isStarted && status === null && (
+        {status === null && (
           <div className="pr-tinder-actions">
-            {answerOptions.map((option) => (
+            {decisionOptions.map((option) => (
               <button
                 key={option.id}
                 type="button"
-                className="pr-tinder-action-btn"
-                style={{ borderColor: option.color, color: option.color }}
-                onClick={() => handleAnswer(option.id)}
+                className={`pr-tinder-action-btn ${option.className}`}
+                onClick={() => handleDecision(option.id)}
+                disabled={isResolvingCard}
               >
-                <span className="pr-tinder-action-icon">{option.icon}</span>
-                <span className="pr-tinder-action-label">{option.label}</span>
+                <span className="pr-tinder-action-marker">{option.marker}</span>
+                <span className="pr-tinder-action-copy">
+                  <span>{option.label}</span>
+                  <small>{option.shortLabel}</small>
+                </span>
               </button>
             ))}
           </div>
@@ -338,15 +665,16 @@ function PrTinderGame({ onFinish }: PrTinderGameProps) {
           >
             <h3>
               {status === 'success'
-                ? 'Code review принят!'
-                : 'Ревью не успело в прод'}
+                ? 'Ревьюер выдержал agent-rush'
+                : 'Агент проскочил с подозрительным diff'}
             </h3>
             <p>
-              Ты оценил(а) <strong>{reviewedCount}</strong> карточек за минуту.
+              Точный разбор: <strong>{score}</strong> из{' '}
+              <strong>{cards.length}</strong>.
             </p>
             <p>
-              Для успеха нужно было разобрать минимум{' '}
-              <strong>{MIN_CARDS_FOR_SUCCESS}</strong>.
+              Порог для победы: <strong>{MIN_SCORE_FOR_SUCCESS}</strong>{' '}
+              правильных свайпов.
             </p>
           </div>
         )}

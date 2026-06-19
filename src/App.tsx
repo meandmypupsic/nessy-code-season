@@ -3,6 +3,7 @@ import './App.css'
 import ContextSnakeGame from './games/context-snake/ContextSnakeGame'
 import MatchPairsGame from './games/match-pairs/MatchPairsGame'
 import OddOneOutGame from './games/odd-one-out/OddOneOutGame'
+import PrTinderGame from './games/pr-tinder/PrTinderGame'
 import PuzzleGame from './games/puzzle/PuzzleGame'
 import { generatePostcard } from './postcardGenerator'
 import codeSeasonBusImage from './assets/code-season-bus.png'
@@ -119,6 +120,13 @@ const AVAILABLE_GAMES: GameDefinition[] = [
     description:
       'Поменяй местами части изображения так, чтобы собрать картинку. Успей за отведённое время!',
     render: (onFinish) => <PuzzleGame durationSeconds={60} onFinish={onFinish} />,
+  },
+  {
+    id: 'code-review-tinder',
+    title: 'Code Review Tinder',
+    description:
+      'Свайпай карточки с кодом от агента: мержим, возвращаем на доработку или отмечаем опасный, но гениальный фикс.',
+    render: (onFinish) => <PrTinderGame onFinish={onFinish} />,
   },
 ]
 

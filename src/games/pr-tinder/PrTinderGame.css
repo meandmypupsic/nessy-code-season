@@ -1,10 +1,9 @@
 .pr-tinder-root {
+  width: min(920px, 100%);
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
 }
 
 .pr-tinder-header {
@@ -14,232 +13,276 @@
 }
 
 .pr-tinder-rules {
-  font-size: var(--type-body);
-  color: var(--color-text-secondary);
   margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--type-body);
+  line-height: 1.45;
   text-align: center;
 }
 
-.pr-tinder-header-row {
+.pr-tinder-scoreboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.pr-tinder-scoreboard span {
+  min-height: 38px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.pr-tinder-timer {
-  font-size: var(--type-body-lg);
-  font-weight: 500;
-}
-
-.pr-tinder-timer-danger {
-  color: #f44336;
-  font-weight: 700;
-  animation: pulse 0.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.pr-tinder-counter {
-  font-size: var(--type-body-lg);
-  font-weight: 500;
-}
-
-.pr-tinder-counter-value {
-  font-weight: 700;
-  color: #4caf50;
+  justify-content: center;
+  padding: 8px 10px;
+  border: 2px solid var(--color-dark);
+  border-radius: 8px;
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  font-size: var(--type-caption);
+  font-weight: 800;
+  text-align: center;
 }
 
 .pr-tinder-main {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  min-height: 200px;
-}
-
-.pr-tinder-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  background: #fff8df;
-  border-radius: 12px;
-  color: var(--color-annotation);
+  gap: 14px;
 }
 
 .pr-tinder-card {
-  background: #fff;
-  border: 3px solid var(--color-dark);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 7px 8px 0 rgba(44, 39, 51, 0.14);
-}
-
-.pr-tinder-diff {
+  min-height: 360px;
   display: flex;
   flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 3px solid var(--color-dark);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #ffffff 68%, #fff8df 100%);
+  box-shadow: 7px 8px 0 rgba(44, 39, 51, 0.16);
 }
 
-.pr-tinder-diff-old,
-.pr-tinder-diff-new {
-  padding: 12px 16px;
-  font-family: 'Courier New', monospace;
-  font-size: var(--type-caption);
-  line-height: 1.5;
-}
-
-.pr-tinder-diff-old {
-  background: #fff0e8;
-  border-bottom: 3px solid var(--color-dark);
-}
-
-.pr-tinder-diff-new {
-  background: #ecfdf3;
-}
-
-.pr-tinder-diff-label {
+.pr-tinder-card-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--color-annotation);
   font-size: var(--type-xs);
-  font-weight: 700;
+  font-weight: 800;
+  line-height: 1.35;
   text-transform: uppercase;
-  color: #666;
-  margin-bottom: 8px;
 }
 
-.pr-tinder-diff-old .pr-tinder-diff-label {
-  color: #c62828;
-}
-
-.pr-tinder-diff-new .pr-tinder-diff-label {
-  color: #2e7d32;
-}
-
-.pr-tinder-diff pre {
+.pr-tinder-card h3 {
   margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--type-subtitle);
+  line-height: 1.18;
+}
+
+.pr-tinder-agent-status {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 5px solid var(--color-accent);
+  background: #fff8df;
+  color: var(--color-text-primary);
+  font-size: var(--type-body);
+  font-weight: 750;
+  line-height: 1.42;
+}
+
+.pr-tinder-code {
+  flex: 1;
+  min-height: 170px;
+  max-height: 240px;
+  margin: 0;
+  overflow: auto;
+  padding: 14px;
+  border: 2px solid rgba(44, 39, 51, 0.22);
+  border-radius: 8px;
+  background: #202026;
+  color: #f6f7f8;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 13px;
+  line-height: 1.45;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 .pr-tinder-feedback {
-  background: #fff8df;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
   border: 2px solid #fdb124;
   border-radius: 8px;
-  padding: 12px 16px;
+  background: #fff8df;
+  color: #5e4620;
   font-size: var(--type-body);
-  color: #e65100;
-  animation: fadeIn 0.3s ease-in-out;
+  font-weight: 720;
+  line-height: 1.35;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+.pr-tinder-feedback-next {
+  flex: 0 0 auto;
+  min-height: 38px;
+  border: 2px solid var(--color-dark);
+  border-radius: 8px;
+  background: var(--color-accent);
+  color: var(--color-dark);
+  padding: 8px 12px;
+  font-size: var(--type-caption);
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
 .pr-tinder-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .pr-tinder-action-btn {
+  min-height: 76px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 12px 16px;
-  background: #fff;
-  border: 3px solid;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 3px solid var(--color-dark);
   border-radius: 8px;
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  box-shadow: 4px 5px 0 rgba(44, 39, 51, 0.16);
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 80px;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background-color 120ms ease;
 }
 
-.pr-tinder-action-btn:hover:not(:disabled) {
+.pr-tinder-action-btn:hover {
   transform: translate(2px, 2px);
-  box-shadow: 3px 4px 0 rgba(44, 39, 51, 0.18);
-}
-
-.pr-tinder-action-btn:active:not(:disabled) {
-  transform: translateY(0);
+  box-shadow: 2px 3px 0 rgba(44, 39, 51, 0.2);
 }
 
 .pr-tinder-action-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: 4px 5px 0 rgba(44, 39, 51, 0.1);
 }
 
-.pr-tinder-action-icon {
-  font-size: var(--type-title-sm);
+.pr-tinder-action-marker {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  font-size: var(--type-subtitle);
+  font-weight: 900;
+  line-height: 1;
 }
 
-.pr-tinder-action-label {
+.pr-tinder-action-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+}
+
+.pr-tinder-action-copy span {
+  font-size: var(--type-caption);
+  font-weight: 900;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.pr-tinder-action-copy small {
+  color: var(--color-text-secondary);
   font-size: var(--type-xs);
-  font-weight: 500;
-  text-align: center;
-  line-height: 1.2;
+  font-weight: 800;
+}
+
+.pr-tinder-action-rework {
+  color: #b83a2d;
+}
+
+.pr-tinder-action-genius {
+  color: #7450c9;
+}
+
+.pr-tinder-action-merge {
+  color: #24633f;
 }
 
 .pr-tinder-result {
-  background: #fff;
-  border: 3px solid;
-  border-radius: 8px;
   padding: 20px;
+  border: 3px solid var(--color-dark);
+  border-radius: 8px;
+  background: var(--color-white);
   text-align: center;
-  animation: slideUp 0.3s ease-in-out;
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  box-shadow: 7px 8px 0 rgba(44, 39, 51, 0.14);
 }
 
 .pr-tinder-result-success {
-  border-color: #24633f;
   background: #ecfdf3;
+  border-color: #24633f;
 }
 
 .pr-tinder-result-fail {
-  border-color: #f2763a;
-  background: #fff8df;
+  background: #fff0e8;
+  border-color: #b83a2d;
 }
 
 .pr-tinder-result h3 {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
+  color: var(--color-text-primary);
   font-size: var(--type-subtitle);
+  line-height: 1.2;
 }
 
 .pr-tinder-result p {
-  margin: 8px 0;
-  font-size: var(--type-body);
+  margin: 6px 0;
   color: var(--color-text-secondary);
+  font-size: var(--type-body);
 }
 
-.pr-tinder-result strong {
-  font-weight: 700;
-}
-
-@media (max-width: 480px) {
+@media (max-width: 720px) {
+  .pr-tinder-scoreboard,
   .pr-tinder-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .pr-tinder-card {
+    min-height: 330px;
+    padding: 14px;
+  }
+
+  .pr-tinder-card-topline {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .pr-tinder-code {
+    max-height: 220px;
+    font-size: 12px;
+  }
+
+  .pr-tinder-feedback {
+    align-items: stretch;
     flex-direction: column;
   }
 
   .pr-tinder-action-btn {
-    flex-direction: row;
-    justify-content: center;
-    min-width: auto;
-    width: 100%;
-  }
-
-  .pr-tinder-action-icon {
-    font-size: var(--type-subtitle);
-  }
-
-  .pr-tinder-action-label {
-    font-size: var(--type-caption);
+    min-height: 58px;
+    justify-content: flex-start;
   }
 }
