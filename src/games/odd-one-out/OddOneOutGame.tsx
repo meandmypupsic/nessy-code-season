@@ -23,173 +23,140 @@ type WordSet = {
 
 const WORD_SETS: WordSet[] = [
   {
-    id: 'fim-context-parts',
-    title: 'Контекст для FIM-completion',
-    hint: 'Что напрямую помогает модели дописать код в середине файла?',
+    id: 'bug-fix-inputs',
+    title: 'Агент чинит баг',
+    hint: 'Что реально поможет понять проблему?',
     items: [
-      { id: 'prefix', label: 'Prefix до курсора', isOk: true },
-      { id: 'suffix', label: 'Suffix после курсора', isOk: true },
-      { id: 'neighbor-symbols', label: 'Соседние символы файла', isOk: true },
-      { id: 'full-git-history', label: 'Вся история Git за год', isOk: false },
+      { id: 'error-text', label: 'Текст ошибки', isOk: true },
+      { id: 'broken-code', label: 'Кусок кода с багом', isOk: true },
+      { id: 'steps', label: 'Шаги, как повторить баг', isOk: true },
+      { id: 'avatar-color', label: 'Цвет аватарки автора', isOk: false },
     ],
   },
   {
-    id: 'code-review-agent-inputs',
-    title: 'Входы для AI code review',
-    hint: 'Что стоит дать агенту, чтобы он ревьюил MR осмысленно?',
+    id: 'safe-ai-fix',
+    title: 'Безопасная AI-правка',
+    hint: 'Что снижает шанс сломать прод?',
     items: [
-      { id: 'mr-diff', label: 'Diff merge request-а', isOk: true },
-      { id: 'changed-tests', label: 'Изменённые тесты', isOk: true },
-      { id: 'ci-status', label: 'Статус CI-пайплайна', isOk: true },
-      { id: 'repository-stars', label: 'Количество звёзд репозитория', isOk: false },
+      { id: 'small-change', label: 'Маленькое изменение', isOk: true },
+      { id: 'test', label: 'Тест на исправленный случай', isOk: true },
+      { id: 'review', label: 'Проверка человеком', isOk: true },
+      { id: 'just-believe', label: 'Просто поверить агенту', isOk: false },
     ],
   },
   {
-    id: 'useful-rag-signals',
-    title: 'Сигналы для поиска контекста',
-    hint: 'Что помогает найти релевантные куски кода для задачи?',
+    id: 'before-deploy',
+    title: 'Перед деплоем',
+    hint: 'Что стоит проверить до выката?',
     items: [
-      { id: 'bm25-score', label: 'BM25-score', isOk: true },
-      { id: 'embedding-similarity', label: 'Embedding similarity', isOk: true },
-      { id: 'recently-edited-files', label: 'Недавно редактируемые файлы', isOk: true },
-      { id: 'alphabetical-order', label: 'Алфавитный порядок файлов', isOk: false },
+      { id: 'tests-green', label: 'Тесты зелёные', isOk: true },
+      { id: 'rollback', label: 'Есть план отката', isOk: true },
+      { id: 'metrics', label: 'Понятно, что мониторить', isOk: true },
+      { id: 'lucky-shirt', label: 'Надета счастливая футболка', isOk: false },
     ],
   },
   {
-    id: 'agent-tool-permissions',
-    title: 'Права инструментов агента',
-    hint: 'Что обычно стоит явно контролировать в агентной системе?',
+    id: 'code-review',
+    title: 'AI помогает в ревью',
+    hint: 'Что похоже на полезный результат ревью?',
     items: [
-      { id: 'write-access', label: 'Право изменять файлы', isOk: true },
-      { id: 'shell-access', label: 'Право запускать shell-команды', isOk: true },
-      { id: 'network-access', label: 'Право ходить в сеть', isOk: true },
-      { id: 'theme-access', label: 'Право менять тему IDE', isOk: false },
+      { id: 'permission-risk', label: 'Нашёл удалённую проверку прав', isOk: true },
+      { id: 'secret-risk', label: 'Заметил секрет в логах', isOk: true },
+      { id: 'test-risk', label: 'Подсказал, где не хватает теста', isOk: true },
+      { id: 'nice-emoji', label: 'Похвалил красивые эмодзи', isOk: false },
     ],
   },
   {
-    id: 'agent-run-state',
-    title: 'Состояние выполнения агентной задачи',
-    hint: 'Что относится к состоянию agent run?',
+    id: 'agent-context',
+    title: 'Что дать агенту в задачу',
+    hint: 'Что поможет агенту не гадать?',
     items: [
-      { id: 'current-plan', label: 'Текущий план', isOk: true },
-      { id: 'tool-call-log', label: 'Лог tool calls', isOk: true },
-      { id: 'intermediate-patch', label: 'Промежуточный patch', isOk: true },
-      { id: 'model-logo', label: 'Логотип модели', isOk: false },
+      { id: 'goal', label: 'Чёткая цель', isOk: true },
+      { id: 'files', label: 'Нужные файлы', isOk: true },
+      { id: 'limits', label: 'Ограничения и запреты', isOk: true },
+      { id: 'weather', label: 'Прогноз погоды', isOk: false },
     ],
   },
   {
-    id: 'multi-agent-handoff',
-    title: 'Передача задачи между агентами',
-    hint: 'Что важно передать следующему агенту?',
+    id: 'bad-agent-signs',
+    title: 'Плохой план агента',
+    hint: 'Что должно насторожить?',
     items: [
-      { id: 'goal', label: 'Цель задачи', isOk: true },
-      { id: 'constraints', label: 'Ограничения', isOk: true },
-      { id: 'evidence', label: 'Найденные факты и ссылки', isOk: true },
-      { id: 'temperature', label: 'Temperature прошлого запроса', isOk: false },
+      { id: 'random-files', label: 'Правит случайные файлы', isOk: true },
+      { id: 'no-repro', label: 'Не пытается повторить баг', isOk: true },
+      { id: 'ignores-request', label: 'Игнорирует просьбу пользователя', isOk: true },
+      { id: 'shows-plan', label: 'Показывает понятный план', isOk: false },
     ],
   },
   {
-    id: 'safe-auto-fix',
-    title: 'Безопасный auto-fix агентом',
-    hint: 'Что снижает риск сломать прод?',
+    id: 'tests-help',
+    title: 'Агент пишет тесты',
+    hint: 'Что делает тест полезным?',
     items: [
-      { id: 'small-diff', label: 'Маленький diff', isOk: true },
-      { id: 'regression-test', label: 'Регрессионный тест', isOk: true },
-      { id: 'ci-green', label: 'Зелёный CI', isOk: true },
-      { id: 'longer-answer', label: 'Более длинный ответ модели', isOk: false },
+      { id: 'edge-case', label: 'Проверяет крайний случай', isOk: true },
+      { id: 'real-bug', label: 'Повторяет найденный баг', isOk: true },
+      { id: 'clear-name', label: 'Понятно называется', isOk: true },
+      { id: 'always-green', label: 'Всегда проходит без проверок', isOk: false },
     ],
   },
   {
-    id: 'inline-edit-context',
-    title: 'Контекст для inline edit',
-    hint: 'Что реально влияет на качество точечной правки?',
+    id: 'logs',
+    title: 'Агент разбирает логи',
+    hint: 'Что полезно для поиска причины?',
     items: [
-      { id: 'selected-code', label: 'Выделенный код', isOk: true },
-      { id: 'user-instruction', label: 'Инструкция пользователя', isOk: true },
-      { id: 'surrounding-code', label: 'Окружающий код', isOk: true },
-      { id: 'file-created-date', label: 'Дата создания файла', isOk: false },
+      { id: 'error-log', label: 'Ошибка из логов', isOk: true },
+      { id: 'time', label: 'Время инцидента', isOk: true },
+      { id: 'recent-release', label: 'Недавний релиз', isOk: true },
+      { id: 'office-address', label: 'Адрес офиса команды', isOk: false },
     ],
   },
   {
-    id: 'requirements-agent-context',
-    title: 'Контекст для агента-аналитика',
-    hint: 'Что поможет агенту уточнить требования?',
+    id: 'secrets',
+    title: 'Что нельзя светить',
+    hint: 'Что опасно отдавать наружу без защиты?',
     items: [
-      { id: 'user-story', label: 'User story', isOk: true },
-      { id: 'acceptance-criteria', label: 'Acceptance criteria', isOk: true },
-      { id: 'figma-flow', label: 'Figma-flow', isOk: true },
-      { id: 'branch-name-style', label: 'Стиль названий веток', isOk: false },
+      { id: 'token', label: 'API-токен', isOk: true },
+      { id: 'password', label: 'Пароль', isOk: true },
+      { id: 'personal-data', label: 'Персональные данные', isOk: true },
+      { id: 'button-text', label: 'Текст кнопки', isOk: false },
     ],
   },
   {
-    id: 'test-generation-context',
-    title: 'Контекст для генерации тестов',
-    hint: 'Что помогает сгенерировать не просто мок, а полезный тест?',
+    id: 'docs',
+    title: 'Агент обновляет документацию',
+    hint: 'Что стоит сверить с кодом?',
     items: [
-      { id: 'function-contract', label: 'Контракт функции', isOk: true },
-      { id: 'edge-cases', label: 'Edge cases', isOk: true },
-      { id: 'existing-test-style', label: 'Стиль существующих тестов', isOk: true },
-      { id: 'commit-author', label: 'Автор последнего коммита', isOk: false },
+      { id: 'api-path', label: 'Адрес API', isOk: true },
+      { id: 'request-example', label: 'Пример запроса', isOk: true },
+      { id: 'response-example', label: 'Пример ответа', isOk: true },
+      { id: 'old-joke', label: 'Старая шутка в README', isOk: false },
     ],
   },
   {
-    id: 'production-incident-agent',
-    title: 'Агент расследует incident',
-    hint: 'Что полезно для root cause analysis?',
+    id: 'payments',
+    title: 'AI-фикс в платежах',
+    hint: 'Что особенно важно проверить?',
     items: [
-      { id: 'error-logs', label: 'Error logs', isOk: true },
-      { id: 'recent-deploys', label: 'Недавние деплои', isOk: true },
-      { id: 'metrics-spike', label: 'Всплеск метрик', isOk: true },
-      { id: 'readme-badges', label: 'Бейджи в README', isOk: false },
+      { id: 'double-charge', label: 'Нет двойного списания', isOk: true },
+      { id: 'amount', label: 'Сумма считается верно', isOk: true },
+      { id: 'retry', label: 'Повтор запроса безопасен', isOk: true },
+      { id: 'button-shade', label: 'Оттенок кнопки красивый', isOk: false },
     ],
   },
   {
-    id: 'agent-observability',
-    title: 'Наблюдаемость агентной системы',
-    hint: 'Что помогает понять, почему агент так ответил?',
+    id: 'legacy',
+    title: 'Агент объясняет legacy-код',
+    hint: 'Что помогает разобраться быстрее?',
     items: [
-      { id: 'prompt-trace', label: 'Prompt trace', isOk: true },
-      { id: 'retrieved-context', label: 'Retrieved context', isOk: true },
-      { id: 'tool-results', label: 'Tool results', isOk: true },
-      { id: 'button-color', label: 'Цвет кнопки Send', isOk: false },
+      { id: 'entry-point', label: 'Где начинается сценарий', isOk: true },
+      { id: 'data-flow', label: 'Куда текут данные', isOk: true },
+      { id: 'risky-place', label: 'Где опасно менять', isOk: true },
+      { id: 'commit-mood', label: 'Настроение автора коммита', isOk: false },
     ],
   },
-  {
-    id: 'mcp-server-contract',
-    title: 'Контракт MCP-сервера',
-    hint: 'Что относится к тому, как агент понимает внешний tool?',
-    items: [
-      { id: 'tool-name', label: 'Tool name', isOk: true },
-      { id: 'input-schema', label: 'Input schema', isOk: true },
-      { id: 'tool-description', label: 'Tool description', isOk: true },
-      { id: 'server-avatar', label: 'Аватарка сервера', isOk: false },
-    ],
-  },
-  {
-    id: 'agent-planning-failure',
-    title: 'Признаки плохого планирования агента',
-    hint: 'Что скорее указывает на проблему с планом?',
-    items: [
-      { id: 'skips-reproduction', label: 'Не воспроизводит баг', isOk: true },
-      { id: 'edits-random-files', label: 'Правит случайные файлы', isOk: true },
-      { id: 'ignores-constraints', label: 'Игнорирует ограничения', isOk: true },
-      { id: 'uses-checklist', label: 'Использует checklist', isOk: false },
-    ],
-  },
-  {
-    id: 'enterprise-ai-coding',
-    title: 'Enterprise AI coding',
-    hint: 'Что особенно важно в корпоративном AI coding?',
-    items: [
-      { id: 'access-control', label: 'Access control', isOk: true },
-      { id: 'audit-log', label: 'Audit log', isOk: true },
-      { id: 'private-context', label: 'Приватный контекст компании', isOk: true },
-      { id: 'public-leaderboard', label: 'Публичный leaderboard', isOk: false },
-    ],
-  },
-];
+]
 
-const MIN_CORRECT_FOR_SUCCESS = 5
+const MIN_CORRECT_FOR_SUCCESS = 3
 
 function shuffle<T>(items: T[]) {
   const copy = [...items]
@@ -223,7 +190,7 @@ function formatTime(totalSeconds: number) {
 }
 
 function OddOneOutGame({
-  durationSeconds = 30,
+  durationSeconds = 45,
   onFinish,
 }: OddOneOutGameProps) {
   const [isStarted, setIsStarted] = useState(false)
@@ -244,12 +211,12 @@ function OddOneOutGame({
   )
 
   const finishGame = useCallback(
-    (finalCorrectCount: number, finalWrongCount: number) => {
+    (finalCorrectCount: number, _finalWrongCount: number) => {
       if (isFinishedRef.current) return
 
       isFinishedRef.current = true
       const result: OddOneOutGameResult =
-        finalCorrectCount >= MIN_CORRECT_FOR_SUCCESS && finalWrongCount === 0
+        finalCorrectCount >= MIN_CORRECT_FOR_SUCCESS
           ? 'success'
           : 'fail'
       setStatus(result)
@@ -307,8 +274,7 @@ function OddOneOutGame({
 
     window.setTimeout(() => {
       if (
-        nextCorrectCount >= MIN_CORRECT_FOR_SUCCESS &&
-        nextWrongCount === 0
+        nextCorrectCount >= MIN_CORRECT_FOR_SUCCESS
       ) {
         finishGame(nextCorrectCount, nextWrongCount)
         return
@@ -347,7 +313,7 @@ function OddOneOutGame({
           <p>
             В каждом раунде выбери ровно одну карточку, которую
             считаешь лишней. Для успеха нужно дать
-            минимум {MIN_CORRECT_FOR_SUCCESS} правильных ответов без ошибок.
+            минимум {MIN_CORRECT_FOR_SUCCESS} правильных ответа.
           </p>
           <button type="button" className="btn primary" onClick={handleStart}>
             Начать

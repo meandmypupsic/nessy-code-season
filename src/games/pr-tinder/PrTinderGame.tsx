@@ -27,16 +27,16 @@ type DecisionOption = {
   className: string
 }
 
-const CARDS_PER_RUN = 7
-const MIN_SCORE_FOR_SUCCESS = 5
+const CARDS_PER_RUN = 5
+const MIN_SCORE_FOR_SUCCESS = 3
 
 const codeCards: CodeCard[] = [
   {
     id: 1,
-    title: 'Права доступа стали проще',
+    title: 'Агент удалил проверку прав',
     agentStatus:
-      'Агент уверенно удалил проверку прав, потому что тесты зеленые.',
-    vibe: 'Выглядит как чистый код, пахнет инцидентом.',
+      'Код стал короче, но теперь любой пользователь может удалить чужой проект.',
+    vibe: 'Короче не значит безопаснее.',
     code: `export async function deleteProject(projectId, user) {
   const project = await db.project.findById(projectId)
 
@@ -45,14 +45,14 @@ const codeCards: CodeCard[] = [
 }`,
     correctDecision: 'rework',
     explanation:
-      'Проверка владельца исчезла. Красиво, но любой пользователь сможет удалить чужой проект.',
+      'Нельзя удалять проверку прав. Агент должен вернуть проверку владельца проекта.',
   },
   {
     id: 2,
-    title: 'Страшный hotfix для дат',
+    title: 'Агент проверил плохую дату',
     agentStatus:
-      'Агент написал некрасивый guard и попросил не смотреть на него до релиза.',
-    vibe: 'Некрасиво, зато edge case пойман.',
+      'Если дата сломана, функция теперь спокойно возвращает null вместо падения.',
+    vibe: 'Неброско, но полезно.',
     code: `function getBillingDate(input) {
   const date = new Date(input)
 
@@ -64,14 +64,14 @@ const codeCards: CodeCard[] = [
 }`,
     correctDecision: 'merge',
     explanation:
-      'Guard защищает от Invalid Date и не ломает формат. Код можно потом причесать, но фикс правильный.',
+      'Проверка защищает от Invalid Date. Такой фикс можно мержить.',
   },
   {
     id: 3,
-    title: 'Кэш на все времена',
+    title: 'Агент сделал вечный кэш',
     agentStatus:
-      'Агент ускорил страницу на 400%, потому что “данные ведь почти не меняются”.',
-    vibe: 'Бенчмарк сияет, пользователи видят вчерашнюю правду.',
+      'Страница стала быстрее, но пользователь может навсегда увидеть старые данные.',
+    vibe: 'Быстро, но неправда.',
     code: `const profileCache = new Map()
 
 export async function getProfile(userId) {
@@ -83,28 +83,28 @@ export async function getProfile(userId) {
 }`,
     correctDecision: 'rework',
     explanation:
-      'Нет TTL и инвалидации. Профиль, роли и настройки могут устареть навсегда в рамках процесса.',
+      'У кэша нет срока жизни и сброса. Нужно добавить TTL или инвалидацию.',
   },
   {
     id: 4,
-    title: 'Удалили try/catch',
+    title: 'Агент перестал прятать ошибку',
     agentStatus:
-      'Агент сказал, что ошибки должен видеть глобальный handler, и внезапно оказался прав.',
-    vibe: 'Смело, но архитектурно честно.',
+      'Раньше ошибка терялась внутри функции, теперь её увидит общий обработчик.',
+    vibe: 'Меньше магии, больше правды.',
     code: `export async function saveInvoice(input) {
   const invoice = await invoiceSchema.parseAsync(input)
   return invoiceService.create(invoice)
 }`,
     correctDecision: 'merge',
     explanation:
-      'Локальный catch только логировал и проглатывал ошибку. Теперь ошибка дойдет до общего обработчика.',
+      'Если общий обработчик ошибок уже есть, не надо глотать ошибку локально.',
   },
   {
     id: 5,
-    title: 'SQL стал читабельнее',
+    title: 'Агент собрал SQL строкой',
     agentStatus:
-      'Агент заменил скучный query builder на “понятный template string”.',
-    vibe: 'Очень читаемо. Особенно для атакующего.',
+      'Запрос выглядит проще, но пользовательский ввод попадает прямо в SQL.',
+    vibe: 'Читаемо для нас и для атакующего.',
     code: `export function findUsers(search) {
   return db.query(
     \`select * from users where name like '%\${search}%'\`
@@ -112,14 +112,14 @@ export async function getProfile(userId) {
 }`,
     correctDecision: 'rework',
     explanation:
-      'Это SQL injection. Нужны параметры запроса, даже если строка выглядит аккуратно.',
+      'Это риск SQL injection. Нужны параметры запроса.',
   },
   {
     id: 6,
-    title: 'Опасная миграция, но с планом',
+    title: 'Агент добавил безопасный переключатель',
     agentStatus:
-      'Агент добавил feature flag и двухфазное чтение, хотя diff выглядит пугающе.',
-    vibe: 'Большой diff, зато rollback не на молитвах.',
+      'Новый модуль можно включить флагом, а старый остаётся запасным вариантом.',
+    vibe: 'Риск есть, но он управляемый.',
     code: `const source = flags.newLedger ? ledgerV2 : ledgerV1
 const fallback = flags.newLedger ? ledgerV1 : ledgerV2
 
@@ -130,14 +130,14 @@ export async function getBalance(accountId) {
 }`,
     correctDecision: 'genius',
     explanation:
-      'Фикс рискованный, но есть флаг, fallback-сравнение и наблюдаемость. Это тот самый гениальный суперлайк.',
+      'Флаг и fallback дают быстрый откат. Это рискованный, но хороший ход.',
   },
   {
     id: 7,
-    title: 'Пустой catch для стабильности',
+    title: 'Агент спрятал ошибку',
     agentStatus:
-      'Агент починил падающий мониторинг, перестав сообщать о падениях.',
-    vibe: 'Прод тихий, потому что сигнал выключили.',
+      'Письмо может не отправиться, но в логах об этом не останется ничего.',
+    vibe: 'Тихо не значит хорошо.',
     code: `try {
   await sendPaymentReceipt(order)
 } catch {
@@ -145,14 +145,14 @@ export async function getBalance(accountId) {
 }`,
     correctDecision: 'rework',
     explanation:
-      'Даже не критичная ошибка должна логироваться или попадать в retry. Иначе проблема станет невидимой.',
+      'Даже не критичную ошибку нужно логировать или отправлять в retry.',
   },
   {
     id: 8,
-    title: 'Странный debounce',
+    title: 'Агент защитил поиск от гонки',
     agentStatus:
-      'Агент добавил ref, таймер и cleanup. Выглядит как лишняя церемония.',
-    vibe: 'На вид тяжеловато, но гонку убрали.',
+      'Если старый ответ придёт позже нового, он больше не перетрёт результат.',
+    vibe: 'Код длиннее, багов меньше.',
     code: `const requestId = useRef(0)
 
 useEffect(() => {
@@ -164,27 +164,27 @@ useEffect(() => {
 }, [query])`,
     correctDecision: 'merge',
     explanation:
-      'Защита от out-of-order ответов корректная: старый ответ больше не перетрет новый результат.',
+      'Проверка requestId защищает UI от старого ответа сервера.',
   },
   {
     id: 9,
-    title: 'Минус проверка на null',
+    title: 'Агент убрал проверку пустого списка',
     agentStatus:
-      'Агент удалил “лишний if”, потому что TypeScript не ругался.',
-    vibe: 'Типы довольны, API из реального мира нет.',
+      'Если у пользователя нет контактов, экран упадёт.',
+    vibe: 'Типы молчат, пользователь страдает.',
     code: `export function getPrimaryEmail(user) {
   return user.contacts[0].email.toLowerCase()
 }`,
     correctDecision: 'rework',
     explanation:
-      'Массив контактов может быть пустым из API или старых данных. Нужен fallback или явная ошибка.',
+      'contacts может быть пустым. Нужен fallback или понятная ошибка.',
   },
   {
     id: 10,
-    title: 'Суровый лимитер',
+    title: 'Агент ограничил повторы',
     agentStatus:
-      'Агент отклонил красивые retry без лимита и принес грубый предохранитель.',
-    vibe: 'Не элегантно, но прод скажет спасибо.',
+      'Синхронизация попробует три раза и остановится, чтобы не положить сервис.',
+    vibe: 'Не бесконечно, значит безопаснее.',
     code: `for (let attempt = 1; attempt <= 3; attempt += 1) {
   const result = await syncChunk(chunk)
   if (result.ok) break
@@ -193,14 +193,14 @@ useEffect(() => {
 }`,
     correctDecision: 'genius',
     explanation:
-      'Ограниченный retry с backoff не устроит бесконечную нагрузку. Опасный участок закрыт прагматично.',
+      'Ограниченный retry с паузой защищает от бесконечной нагрузки.',
   },
   {
     id: 11,
-    title: 'Красивый Promise.all',
+    title: 'Агент распараллелил оплату',
     agentStatus:
-      'Агент распараллелил запросы и гордо показал минус 800 мс в профайлере.',
-    vibe: 'Быстро, но порядок операций был не случайным.',
+      'Письмо может уйти до оплаты, потому что всё запускается одновременно.',
+    vibe: 'Быстро, но порядок важен.',
     code: `await Promise.all([
   chargeCard(order),
   reserveStock(order.items),
@@ -208,14 +208,14 @@ useEffect(() => {
 ])`,
     correctDecision: 'rework',
     explanation:
-      'Письмо может уйти до успешной оплаты или резерва. Тут нужна управляемая последовательность и компенсации.',
+      'Оплата, резерв и письмо нельзя бездумно запускать параллельно.',
   },
   {
     id: 12,
-    title: 'Некрасивый clamp',
+    title: 'Агент ограничил скидку',
     agentStatus:
-      'Агент добавил скучную математику вокруг скидки и испортил элегантную формулу.',
-    vibe: 'Выглядит как паранойя, но спасает деньги.',
+      'Скидка больше не может стать отрицательной или больше 80%.',
+    vibe: 'Скучно, зато касса цела.',
     code: `const normalizedDiscount = Math.min(
   Math.max(discountPercent, 0),
   80,
@@ -224,278 +224,7 @@ useEffect(() => {
 return price * (1 - normalizedDiscount / 100)`,
     correctDecision: 'merge',
     explanation:
-      'Clamp защищает от отрицательных и слишком больших скидок. Это правильная бизнес-защита.',
-  },
-  {
-    id: 13,
-    title: 'Стабильный ключ',
-    agentStatus:
-      'Агент заменил id на index, потому что “React перестал ругаться”.',
-    vibe: 'Warning пропал, баг переехал в UI.',
-    code: `{items.map((item, index) => (
-  <CartRow key={index} item={item} />
-))}`,
-    correctDecision: 'rework',
-    explanation:
-      'Index ломает состояние строк при удалении и сортировке. Нужен стабильный ключ из данных.',
-  },
-  {
-    id: 14,
-    title: 'Грубая идемпотентность',
-    agentStatus:
-      'Агент притащил уникальный ключ на платежи и назвал это “скучным фиксиком”.',
-    vibe: 'Мало романтики, много спасенных дублей.',
-    code: `await db.payment.create({
-  idempotencyKey: request.headers['idempotency-key'],
-  orderId,
-  amount,
-})`,
-    correctDecision: 'genius',
-    explanation:
-      'Для платежей идемпотентность критична. Фикс может требовать миграции, но направление правильное.',
-  },
-  {
-    id: 15,
-    title: 'JSON parse без шума',
-    agentStatus:
-      'Агент решил, что плохой JSON можно считать пустым объектом ради UX.',
-    vibe: 'Пользователю спокойно, данным плохо.',
-    code: `function readSettings(raw) {
-  try {
-    return JSON.parse(raw)
-  } catch {
-    return {}
-  }
-}`,
-    correctDecision: 'rework',
-    explanation:
-      'Тихий fallback скрывает поврежденные настройки. Нужен лог, reset-flow или явная ошибка восстановления.',
-  },
-  {
-    id: 16,
-    title: 'Минус N+1',
-    agentStatus:
-      'Агент написал менее очевидный запрос и сократил 101 поход в базу до одного.',
-    vibe: 'Читается тяжелее, работает честнее.',
-    code: `const posts = await db.post.findMany({
-  where: { authorId: { in: authorIds } },
-  include: { comments: true },
-})`,
-    correctDecision: 'merge',
-    explanation:
-      'Это нормальная загрузка связей вместо N+1. Если объем контролируется пагинацией, мержить можно.',
-  },
-  {
-    id: 17,
-    title: 'Надежный random',
-    agentStatus:
-      'Агент заменил crypto на Math.random, потому что “токен же временный”.',
-    vibe: 'Стало короче, стало страшнее.',
-    code: `export function createResetCode() {
-  return Math.random().toString(36).slice(2, 10)
-}`,
-    correctDecision: 'rework',
-    explanation:
-      'Для reset-кодов нужен криптографически стойкий генератор. Math.random предсказуем недостаточно.',
-  },
-  {
-    id: 18,
-    title: 'Лишний await',
-    agentStatus:
-      'Агент убрал await перед return и очень собой доволен.',
-    vibe: 'Микро-рефактор без подвоха.',
-    code: `export function loadUser(id) {
-  return userRepository.findById(id)
-}`,
-    correctDecision: 'merge',
-    explanation:
-      'Если не нужен try/catch или finally в этой функции, прямой return Promise эквивалентен и проще.',
-  },
-  {
-    id: 19,
-    title: 'Флаг без выключателя',
-    agentStatus:
-      'Агент добавил feature flag, но включил его прямо в коде “временно”.',
-    vibe: 'Флаг есть, контроля нет.',
-    code: `const useNewCheckout = true
-
-export function checkoutFlow() {
-  return useNewCheckout ? checkoutV2() : checkoutV1()
-}`,
-    correctDecision: 'rework',
-    explanation:
-      'Hardcoded flag не помогает с rollout и rollback. Нужен внешний конфиг или сервис флагов.',
-  },
-  {
-    id: 20,
-    title: 'Уродливый timezone фикс',
-    agentStatus:
-      'Агент добавил явный UTC и сломал красоту one-liner.',
-    vibe: 'Выглядит занудно, зато конец месяца больше не плавает.',
-    code: `const endOfMonth = new Date(Date.UTC(
-  year,
-  month + 1,
-  0,
-  23,
-  59,
-  59,
-))`,
-    correctDecision: 'merge',
-    explanation:
-      'Явный UTC убирает зависимость от локальной таймзоны сервера. Для биллинга это важно.',
-  },
-  {
-    id: 21,
-    title: 'Оптимизация валидации',
-    agentStatus:
-      'Агент убрал server-side validation, потому что форма уже валидируется на клиенте.',
-    vibe: 'Минус дублирование, плюс дырка.',
-    code: `export async function updateEmail(req) {
-  return users.update(req.user.id, {
-    email: req.body.email,
-  })
-}`,
-    correctDecision: 'rework',
-    explanation:
-      'Клиентскую проверку можно обойти. Сервер обязан валидировать email и права сам.',
-  },
-  {
-    id: 22,
-    title: 'Мутный double write',
-    agentStatus:
-      'Агент пишет и в старую, и в новую таблицу. Diff большой, зато миграция дышит.',
-    vibe: 'Рискованно, но это взрослая миграция.',
-    code: `await oldOrders.save(order)
-await newOrders.save(toNewOrder(order))
-
-metrics.count('orders.double_write.ok')`,
-    correctDecision: 'genius',
-    explanation:
-      'Double write с метрикой помогает безопасно переехать на новую модель данных. Нужен контроль, но идея сильная.',
-  },
-  {
-    id: 23,
-    title: 'Сортировка по строке',
-    agentStatus:
-      'Агент заменил компаратор на localeCompare и сказал, что теперь “человечнее”.',
-    vibe: 'Для имен красиво, для чисел внезапно нет.',
-    code: `versions.sort((a, b) => (
-  a.version.localeCompare(b.version)
-))`,
-    correctDecision: 'rework',
-    explanation:
-      'Версии так сортируются неправильно: 10 может оказаться перед 2. Нужен semver-aware compare.',
-  },
-  {
-    id: 24,
-    title: 'Защита от replay',
-    agentStatus:
-      'Агент добавил timestamp и подпись к webhook. Выглядит как overengineering.',
-    vibe: 'Сложнее, но атака становится заметно труднее.',
-    code: `const age = Date.now() - Number(headers['x-sent-at'])
-
-if (age > 5 * 60 * 1000) throw new Error('stale webhook')
-verifySignature(body, headers['x-signature'])`,
-    correctDecision: 'genius',
-    explanation:
-      'Проверка возраста и подписи защищает webhook от replay. Для внешних событий это правильный уровень строгости.',
-  },
-  {
-    id: 25,
-    title: 'Слишком заботливый catch',
-    agentStatus:
-      'Агент заменил ошибку на null, чтобы “экран не падал”.',
-    vibe: 'Падать перестало, чиниться тоже.',
-    code: `export async function loadDashboard() {
-  try {
-    return await api.dashboard()
-  } catch {
-    return null
-  }
-}`,
-    correctDecision: 'rework',
-    explanation:
-      'Нужно различать empty state и ошибку загрузки. Null без логирования ломает диагностику и UX.',
-  },
-  {
-    id: 26,
-    title: 'Скучная нормализация email',
-    agentStatus:
-      'Агент добавил trim и lowercase, хотя тесты проходили без этого.',
-    vibe: 'Мелочь, которая убирает странные дубли.',
-    code: `const email = input.email.trim().toLowerCase()
-
-await users.create({
-  ...input,
-  email,
-})`,
-    correctDecision: 'merge',
-    explanation:
-      'Нормализация email на входе предотвращает дубли из-за регистра и пробелов.',
-  },
-  {
-    id: 27,
-    title: 'Секрет в логах',
-    agentStatus:
-      'Агент добавил подробный лог запроса, чтобы быстрее дебажить интеграцию.',
-    vibe: 'Очень удобно до первого утекшего токена.',
-    code: `logger.info('payment provider request', {
-  headers,
-  body,
-})`,
-    correctDecision: 'rework',
-    explanation:
-      'Headers и body могут содержать токены, карты или PII. Нужны маскирование и выборочные поля.',
-  },
-  {
-    id: 28,
-    title: 'AbortController в бой',
-    agentStatus:
-      'Агент добавил отмену запроса и cleanup. Код стал длиннее.',
-    vibe: 'Больше строк, меньше setState после размонтирования.',
-    code: `useEffect(() => {
-  const controller = new AbortController()
-
-  fetch(url, { signal: controller.signal })
-    .then((res) => res.json())
-    .then(setData)
-
-  return () => controller.abort()
-}, [url])`,
-    correctDecision: 'merge',
-    explanation:
-      'Cleanup отменяет устаревший запрос при смене url или размонтировании. Это правильная защита UI.',
-  },
-  {
-    id: 29,
-    title: 'Boolean из env',
-    agentStatus:
-      'Агент преобразовал строку окружения через Boolean и пошел пить кофе.',
-    vibe: 'Кажется логично, пока не встретишь строку false.',
-    code: `const enablePayments = Boolean(process.env.ENABLE_PAYMENTS)
-
-if (enablePayments) {
-  startPaymentWorker()
-}`,
-    correctDecision: 'rework',
-    explanation:
-      'Boolean("false") вернет true. Нужно явное сравнение со значением вроде "true".',
-  },
-  {
-    id: 30,
-    title: 'Canary для подозрительного алгоритма',
-    agentStatus:
-      'Агент отправляет 1% трафика в новый ранжировщик и сравнивает ответы.',
-    vibe: 'Опасно, но контролируемо.',
-    code: `const useCandidate = hash(user.id) % 100 === 0
-const result = useCandidate
-  ? rankerCandidate.rank(items)
-  : rankerStable.rank(items)
-
-metrics.histogram('ranker.diff', compare(result, items))`,
-    correctDecision: 'genius',
-    explanation:
-      'Canary на 1% с метрикой отличий дает проверить рискованный алгоритм без полного выката.',
+      'Ограничение скидки защищает деньги и бизнес-правила.',
   },
 ]
 
@@ -509,7 +238,7 @@ const decisionOptions: DecisionOption[] = [
   },
   {
     id: 'genius',
-    label: 'Опасный, но гениальный фикс',
+    label: 'Рискованно, но умно',
     shortLabel: 'Суперлайк',
     marker: '*',
     className: 'pr-tinder-action-genius',
@@ -599,7 +328,7 @@ function PrTinderGame({ onFinish }: PrTinderGameProps) {
     <div className="pr-tinder-root">
       <div className="pr-tinder-header">
         <p className="pr-tinder-rules">
-          Реши судьбу {cards.length} agent-фиксов. Для победы нужно минимум{' '}
+          Реши судьбу {cards.length} AI-правок. Для победы нужно минимум{' '}
           {MIN_SCORE_FOR_SUCCESS} точных ревью.
         </p>
         <div className="pr-tinder-scoreboard" aria-label="Статистика ревью">

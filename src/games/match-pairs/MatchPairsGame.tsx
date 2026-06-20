@@ -19,100 +19,100 @@ type Card = {
   label: string
 }
 
-const ROUND_SECONDS = 60
-const PAIRS_PER_ROUND = 6
+const ROUND_SECONDS = 75
+const PAIRS_PER_ROUND = 4
 const MISMATCH_HIDE_DELAY_MS = 1100
 
 const PAIR_BANK: Pair[] = [
   {
     id: 'slow-code-review',
-    problem: 'Долгое ревью кода',
-    solution: 'AI Code Reviewer',
+    problem: 'Ревью кода занимает часы',
+    solution: 'Агент быстро ищет риски в diff',
   },
   {
     id: 'missing-tests',
-    problem: 'Не хватает тестов',
-    solution: 'AI Test Generator',
+    problem: 'К багу забыли добавить тест',
+    solution: 'Агент предлагает тест на этот случай',
   },
   {
     id: 'unclear-requirements',
-    problem: 'Нечёткие требования',
-    solution: 'AI Product Analyst',
+    problem: 'Задача описана слишком мутно',
+    solution: 'Агент задаёт уточняющие вопросы',
   },
   {
     id: 'legacy-onboarding',
-    problem: 'Сложный legacy-код',
-    solution: 'AI Code Explainer',
+    problem: 'Непонятно, как работает legacy-код',
+    solution: 'Агент объясняет сценарий по шагам',
   },
   {
     id: 'flaky-tests',
-    problem: 'Флейковые тесты',
-    solution: 'AI Test Triage',
+    problem: 'Тесты то падают, то проходят',
+    solution: 'Агент ищет нестабильное место',
   },
   {
     id: 'security-gaps',
-    problem: 'Пропущенные уязвимости',
-    solution: 'AI Security Scanner',
+    problem: 'В коде могли оставить уязвимость',
+    solution: 'Агент проверяет опасные паттерны',
   },
   {
     id: 'slow-debugging',
-    problem: 'Долгий поиск бага',
-    solution: 'AI Debug Assistant',
+    problem: 'Баг сложно повторить',
+    solution: 'Агент просит шаги и смотрит логи',
   },
   {
     id: 'poor-docs',
-    problem: 'Устаревшая документация',
-    solution: 'AI Docs Writer',
+    problem: 'Документация отстала от кода',
+    solution: 'Агент обновляет README и примеры',
   },
   {
     id: 'manual-release-notes',
-    problem: 'Ручные release notes',
-    solution: 'AI Changelog Builder',
+    problem: 'Релизные заметки пишут руками',
+    solution: 'Агент собирает изменения из PR',
   },
   {
     id: 'incident-noise',
-    problem: 'Шум в инцидентах',
-    solution: 'AI Incident Summarizer',
+    problem: 'В инциденте слишком много сообщений',
+    solution: 'Агент делает короткое summary',
   },
   {
     id: 'slow-estimation',
-    problem: 'Неточная оценка задач',
-    solution: 'AI Estimation Assistant',
+    problem: 'Непонятно, насколько большая задача',
+    solution: 'Агент раскладывает работу на шаги',
   },
   {
     id: 'merge-conflicts',
-    problem: 'Частые merge conflicts',
-    solution: 'AI Merge Helper',
+    problem: 'После merge появились конфликты',
+    solution: 'Агент помогает аккуратно свести версии',
   },
   {
     id: 'duplicate-bugs',
-    problem: 'Дубли баг-репортов',
-    solution: 'AI Issue Deduplicator',
+    problem: 'Один баг завели несколько раз',
+    solution: 'Агент находит похожие тикеты',
   },
   {
     id: 'bad-logs',
-    problem: 'Непонятные логи',
-    solution: 'AI Log Analyzer',
+    problem: 'По логам ничего не ясно',
+    solution: 'Агент выделяет главную ошибку',
   },
   {
     id: 'manual-refactoring',
-    problem: 'Ручной рефакторинг',
-    solution: 'AI Refactoring Agent',
+    problem: 'Нужно безопасно упростить код',
+    solution: 'Агент предлагает маленький рефакторинг',
   },
   {
     id: 'knowledge-search',
-    problem: 'Долгий поиск контекста',
-    solution: 'AI Knowledge Search',
+    problem: 'Долго искать нужный файл',
+    solution: 'Агент находит место в репозитории',
   },
   {
     id: 'api-contract-drift',
-    problem: 'Расхождение API-контрактов',
-    solution: 'AI Contract Checker',
+    problem: 'Фронт и бэк ждут разные поля',
+    solution: 'Агент сверяет контракт API',
   },
   {
     id: 'pr-description',
-    problem: 'Пустое описание PR',
-    solution: 'AI PR Summarizer',
+    problem: 'В PR нет нормального описания',
+    solution: 'Агент кратко объясняет diff',
   },
 ]
 
@@ -244,8 +244,8 @@ function MatchPairsGame({ onFinish }: MatchPairsGameProps) {
           <div className="match-pairs-intro-copy">
             <p className="match-pairs-intro-title">Правила раунда</p>
             <p>
-              На поле 12 закрытых карточек. Открывай по две за ход и ищи пары:
-              оранжевая карточка — проблема в SDLC, синяя — AI-решение.
+              Открывай по две карточки и ищи пары: оранжевая карточка —
+              проблема команды, синяя — чем AI-агент может помочь.
             </p>
           </div>
           <button
@@ -265,7 +265,7 @@ function MatchPairsGame({ onFinish }: MatchPairsGameProps) {
         </span>
         <span className="match-pairs-stat">
           <strong>{matchedPairIds.length}</strong>
-          <span>/ {PAIRS_PER_ROUND} пар</span>
+          <span>/ {PAIRS_PER_ROUND} пары</span>
         </span>
       </div>
 
@@ -307,7 +307,7 @@ function MatchPairsGame({ onFinish }: MatchPairsGameProps) {
 
       {result === 'success' && (
         <p className="match-pairs-helper success">
-          Все 6 пар найдены до истечения времени.
+          Все пары найдены до истечения времени.
         </p>
       )}
       {result === 'fail' && (

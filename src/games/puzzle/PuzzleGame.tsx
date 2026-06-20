@@ -121,6 +121,22 @@ function PuzzleGame({ durationSeconds, onFinish }: PuzzleGameProps) {
         )}
       </div>
 
+      {!isStarted && status === null && (
+        <div className="puzzle-intro">
+          <img src={puzzleImage} alt="Пример картинки для пазла" />
+          <p>
+            Запомни картинку, нажми "Начать", а потом выбирай две плитки,
+            чтобы поменять их местами.
+          </p>
+        </div>
+      )}
+
+      {isStarted && status === null && (
+        <p className="puzzle-helper">
+          Нажми одну плитку, потом вторую — они поменяются местами.
+        </p>
+      )}
+
       <div className="puzzle-grid">
         {tiles.map((tileValue, index) => (
           <button
@@ -151,12 +167,12 @@ function PuzzleGame({ durationSeconds, onFinish }: PuzzleGameProps) {
 
       {status === 'success' && (
         <p className="puzzle-helper success">
-          Ты верно собрал картинку! В SDLC, как и в пазле, важно поставить каждый элемент на своё место. Так и рождается чистый код!
+          Картинка собрана. В разработке так же: когда куски контекста на своих местах, агент помогает заметно лучше.
         </p>
       )}
       {status === 'fail' && (
         <p className="puzzle-helper fail">
-          Увы, время вышло. В SDLC дедлайны тоже не ждут — но это не повод сдаваться.
+          Время вышло. Ничего страшного: нажми "Попробовать еще раз" или переходи дальше.
         </p>
       )}
     </div>

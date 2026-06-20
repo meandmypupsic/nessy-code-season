@@ -97,35 +97,35 @@ const AVAILABLE_GAMES: GameDefinition[] = [
     id: 'context-snake',
     title: 'Контекстная змейка',
     description:
-      'Управляй змейкой внутри контекстного окна: собирай MCP, skills, docs и prompt-куски, но не переполни контекст. Нужно продержаться 60 секунд.',
+      'Собирай полезные подсказки для AI-агента: задачу, код, логи и документацию. Не забивай контекст лишним. Для победы хватит 4 разных типов.',
     render: (onFinish) => <ContextSnakeGame onFinish={onFinish} />,
   },
   {
     id: 'odd-one-out',
     title: 'Кто лишний?',
     description:
-      'Ищи лишний пункт в SDLC наборах из четырёх слов. Для победы нужно минимум 5 правильных ответов без ошибок.',
+      'В каждом наборе найди вариант, который явно не помогает разработке. Нужно 3 правильных ответа.',
     render: (onFinish) => <OddOneOutGame onFinish={onFinish} />,
   },
   {
     id: 'match-pairs',
     title: 'Найди пару',
     description:
-      'Открывай по две карточки и сопоставляй оранжевые проблемы в SDLC с синими AI-решениями. За 60 секунд нужно найти 6 пар.',
+      'Открывай карточки и соединяй понятные проблемы разработки с тем, как AI-агент может помочь. Нужно найти 4 пары.',
     render: (onFinish) => <MatchPairsGame onFinish={onFinish} />,
   },
   {
     id: 'puzzle',
     title: 'Собери пазл',
     description:
-      'Поменяй местами части изображения так, чтобы собрать картинку. Успей за отведённое время!',
-    render: (onFinish) => <PuzzleGame durationSeconds={60} onFinish={onFinish} />,
+      'Нажимай на две части картинки, чтобы поменять их местами. Собери изображение Nessy до конца таймера.',
+    render: (onFinish) => <PuzzleGame durationSeconds={90} onFinish={onFinish} />,
   },
   {
     id: 'code-review-tinder',
     title: 'Code Review Tinder',
     description:
-      'Свайпай карточки с кодом от агента: мержим, возвращаем на доработку или отмечаем опасный, но гениальный фикс.',
+      'Реши судьбу AI-фикса: мержим, отправляем на доработку или отмечаем как рискованный, но умный ход. Нужно 3 верных решения из 5.',
     render: (onFinish) => <PrTinderGame onFinish={onFinish} />,
   },
 ]

@@ -34,56 +34,57 @@ const ROUND_SECONDS = 60
 const GRID_WIDTH = 22
 const GRID_HEIGHT = 16
 const CONTEXT_LIMIT = 100
-const INITIAL_CONTEXT = 18
-const TICK_MS = 145
+const INITIAL_CONTEXT = 12
+const TICK_MS = 180
 const FOOD_COUNT = 9
+const REQUIRED_CONTEXT_TYPES = 4
 
 const CONTEXT_ITEMS: ContextItem[] = [
   {
     id: 'mcp',
-    label: 'MCP server',
-    shortLabel: 'MCP',
-    tokens: 12,
+    label: 'Доступ к сервису',
+    shortLabel: 'API',
+    tokens: 24,
     growth: 4,
     color: '#428bf9',
   },
   {
     id: 'skills',
-    label: 'Skills',
-    shortLabel: 'SKL',
-    tokens: 9,
+    label: 'Навык агента',
+    shortLabel: 'AI',
+    tokens: 20,
     growth: 3,
     color: '#f2763a',
   },
   {
     id: 'repo',
-    label: 'Repo map',
-    shortLabel: 'MAP',
-    tokens: 7,
+    label: 'Карта кода',
+    shortLabel: 'КОД',
+    tokens: 16,
     growth: 2,
     color: '#5f7f32',
   },
   {
     id: 'docs',
-    label: 'Docs chunk',
-    shortLabel: 'DOC',
-    tokens: 6,
+    label: 'Документация',
+    shortLabel: 'ДОК',
+    tokens: 14,
     growth: 2,
     color: '#8a63d2',
   },
   {
     id: 'logs',
-    label: 'Logs',
-    shortLabel: 'LOG',
-    tokens: 4,
+    label: 'Логи ошибки',
+    shortLabel: 'ЛОГ',
+    tokens: 10,
     growth: 1,
     color: '#2c2733',
   },
   {
     id: 'prompt',
-    label: 'Prompt',
-    shortLabel: 'PRM',
-    tokens: 10,
+    label: 'Цель задачи',
+    shortLabel: 'ЦЕЛЬ',
+    tokens: 18,
     growth: 3,
     color: '#fdb124',
   },
@@ -154,6 +155,14 @@ function buildFoodBatch(snake: Point[], count: number) {
 
 function formatTime(seconds: number) {
   return `0:${seconds.toString().padStart(2, '0')}`
+}
+
+function formatContextPercent(value: number) {
+  return Math.min(100, Math.round((value / CONTEXT_LIMIT) * 100))
+}
+
+function formatContextImpact(tokens: number) {
+  return Math.max(1, Math.round((tokens / CONTEXT_LIMIT) * 100))
 }
 
 function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
@@ -254,10 +263,11 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
       setTimeLeft(nextTimeLeft)
 
       if (nextTimeLeft === 0) {
-        const hasFullContext = CONTEXT_ITEMS.every((item) =>
-          collectedItemIdsRef.current.includes(item.id),
+        finishGame(
+          collectedItemIdsRef.current.length >= REQUIRED_CONTEXT_TYPES
+            ? 'win'
+            : 'missing-context',
         )
-        finishGame(hasFullContext ? 'win' : 'missing-context')
       }
     }, 250)
 
@@ -331,6 +341,11 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
             return nextSnake
           }
 
+          if (nextCollectedItemIds.length >= REQUIRED_CONTEXT_TYPES) {
+            finishGame('win')
+            return nextSnake
+          }
+
           const nextFoods = foodsRef.current.filter(
             (_, index) => index !== eatenFoodIndex,
           )
@@ -353,8 +368,12 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
     () => new Map(snake.map((segment, index) => [buildCellKey(segment), index])),
     [snake],
   )
-  const contextPercent = Math.min(100, contextUsed)
+  const contextPercent = formatContextPercent(contextUsed)
   const collectedCount = collectedItemIds.length
+  const fieldContextTotal = foods.reduce(
+    (total, food) => total + formatContextImpact(food.item.tokens),
+    0,
+  )
   const hottestFood = foods.reduce(
     (currentHottest, currentFood) =>
       currentFood.item.tokens > currentHottest.item.tokens
@@ -364,15 +383,15 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
   )
   const resultTitle =
     finishReason === 'win'
-      ? 'Контекст удержан'
+      ? 'Контекст собран'
       : finishReason === 'missing-context'
-        ? 'Не хватило уникального контекста'
+        ? 'Не хватило полезных подсказок'
       : finishReason === 'overflow'
-        ? 'Контекст переполнен'
+        ? 'Контекст переполнен лишним'
         : finishReason === 'self'
           ? 'Змейка запуталась в себе'
           : finishReason === 'wall'
-            ? 'Вышел за контекстное окно'
+            ? 'Врезался в границу поля'
             : null
 
   return (
@@ -386,8 +405,8 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
         </div>
         <div className="context-snake-window">
           <div className="context-snake-window-label">
-            <span>Контекстное окно</span>
-            <strong>{contextUsed}/{CONTEXT_LIMIT}</strong>
+            <span>Заполнение контекста</span>
+            <strong>{contextPercent}%</strong>
           </div>
           <div className="context-snake-meter" aria-hidden="true">
             <div style={{ width: `${contextPercent}%` }} />
@@ -402,7 +421,7 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
       <div className="context-snake-objective">
         <div>
           <span>Задача</span>
-          <strong>Собери уникальный контекст: {collectedCount}/{CONTEXT_ITEMS.length}</strong>
+          <strong>Собери разные подсказки: {Math.min(collectedCount, REQUIRED_CONTEXT_TYPES)}/{REQUIRED_CONTEXT_TYPES}</strong>
         </div>
         <div className="context-snake-checklist">
           {CONTEXT_ITEMS.map((item) => {
@@ -414,7 +433,7 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
                 className={isCollected ? 'context-snake-collected' : ''}
               >
                 {isCollected ? '✓ ' : ''}
-                {item.shortLabel}
+                {item.shortLabel} +{formatContextImpact(item.tokens)}%
               </span>
             )
           })}
@@ -454,10 +473,20 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
                     ? ({
                         '--context-item-color': currentFood.item.color,
                       } as React.CSSProperties)
+                  : undefined
+                }
+                aria-label={
+                  currentFood
+                    ? `${currentFood.item.label}, +${formatContextImpact(currentFood.item.tokens)}% к контексту`
                     : undefined
                 }
               >
-                {currentFood && <span>{currentFood.item.shortLabel}</span>}
+                {currentFood && (
+                  <span>
+                    <strong>{currentFood.item.shortLabel}</strong>
+                    <small>+{formatContextImpact(currentFood.item.tokens)}%</small>
+                  </span>
+                )}
               </div>
             )
           })}
@@ -466,7 +495,8 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
             <div className="context-snake-overlay">
               <h3>Контекстная змейка</h3>
               <p>
-                Собирай контекст, но не переполняй окно. Продержись 60 секунд.
+                Собери 4 разных типа подсказок для AI-агента и не переполни контекст.
+                Процент на подсказке показывает, насколько она заполнит контекст.
               </p>
               <button className="btn primary" onClick={() => setHasStarted(true)}>
                 Старт
@@ -488,10 +518,10 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
               <h3>{resultTitle}</h3>
               <p>
                 {finishReason === 'win'
-                  ? `Финальная загрузка контекста: ${contextUsed}/${CONTEXT_LIMIT}. Все типы собраны.`
+                  ? `Финальная загрузка контекста: ${contextPercent}%. Агенту хватит данных, чтобы помочь.`
                   : finishReason === 'missing-context'
-                    ? `Время вышло, но собрано только ${collectedCount}/${CONTEXT_ITEMS.length} типов контекста.`
-                  : `Игра остановлена на ${formatTime(timeLeft)}. Контекст: ${contextUsed}/${CONTEXT_LIMIT}.`}
+                    ? `Время вышло, собрано только ${collectedCount}/${REQUIRED_CONTEXT_TYPES} нужных типов.`
+                  : `Игра остановлена на ${formatTime(timeLeft)}. Контекст заполнен на ${contextPercent}%.`}
               </p>
             </div>
           )}
@@ -500,10 +530,10 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
         <aside className="context-snake-side">
           <div className="context-snake-next">
             <span>На поле</span>
-            <strong>{foods.length} элементов</strong>
+            <strong>{fieldContextTotal}% контекста</strong>
             <p>
-              Самый тяжёлый: {hottestFood.item.label}, +{hottestFood.item.tokens}
-              контекста
+              Доступно {foods.length} подсказок. Если собрать всё подряд,
+              контекст переполнится. Самая объёмная: {hottestFood.item.label}, +{formatContextImpact(hottestFood.item.tokens)}%.
             </p>
           </div>
 
@@ -512,7 +542,7 @@ function ContextSnakeGame({ onFinish }: ContextSnakeGameProps) {
             <strong>{lastItem?.label ?? 'пока пусто'}</strong>
             <p>
               {lastItem
-                ? `+${lastItem.tokens} контекста, рост +${lastItem.growth}`
+                ? `+${formatContextImpact(lastItem.tokens)}% к контексту, рост +${lastItem.growth}`
                 : 'первый контекст еще впереди'}
             </p>
           </div>
